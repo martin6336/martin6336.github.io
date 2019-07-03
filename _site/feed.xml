@@ -1,6 +1,6 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.8.1">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2019-07-03T12:24:26+08:00</updated><id>http://localhost:4000/</id><title type="html">your awesome title</title><subtitle>兴趣使然</subtitle><author><name>true</name></author><entry><title type="html">Summarization</title><link href="http://localhost:4000/2019/07/03/summarization.html" rel="alternate" type="text/html" title="Summarization" /><published>2019-07-03T00:00:00+08:00</published><updated>2019-07-03T00:00:00+08:00</updated><id>http://localhost:4000/2019/07/03/summarization</id><content type="html" xml:base="http://localhost:4000/2019/07/03/summarization.html">&lt;h1 id=&quot;summarization&quot;&gt;summarization&lt;/h1&gt;
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.8.1">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2019-07-04T01:20:21+08:00</updated><id>http://localhost:4000/</id><title type="html">your awesome title</title><subtitle>兴趣使然</subtitle><author><name>true</name></author><entry><title type="html">Summarization</title><link href="http://localhost:4000/2019/07/03/summarization.html" rel="alternate" type="text/html" title="Summarization" /><published>2019-07-03T00:00:00+08:00</published><updated>2019-07-03T00:00:00+08:00</updated><id>http://localhost:4000/2019/07/03/summarization</id><content type="html" xml:base="http://localhost:4000/2019/07/03/summarization.html">&lt;h1 id=&quot;summarization&quot;&gt;summarization&lt;/h1&gt;
 
-&lt;h2 id=&quot;1abstractive-text-summarization-using-sequence-to-sequence-rnns-and-beyond2016-conll&quot;&gt;1,Abstractive Text Summarization using Sequence-to-sequence RNNs and Beyond(2016 coNLL)&lt;/h2&gt;
+&lt;h2 id=&quot;1-abstractive-text-summarization-using-sequence-to-sequence-rnns-and-beyond2016-conll&quot;&gt;1. Abstractive Text Summarization using Sequence-to-sequence RNNs and Beyond(2016 coNLL)&lt;/h2&gt;
 
 &lt;h3 id=&quot;problems-to-solve&quot;&gt;problems to solve&lt;/h3&gt;
 &lt;ul&gt;
@@ -16,21 +16,249 @@
 &lt;/ul&gt;
 
 &lt;h3 id=&quot;model-structure&quot;&gt;model structure&lt;/h3&gt;
+&lt;p&gt;&lt;strong&gt;1&lt;/strong&gt;. Encoder-Decoder RNN with Attention
+基本模型依据&lt;a href=&quot;https://arxiv.org/pdf/1409.0473v7.pdf&quot; title=&quot;Neural machine translation by jointly learning to align and translate&quot;&gt;Bahdanau&lt;/a&gt;提出的模型。&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;encoder consists of a bidirectional GRU-RNN&lt;/li&gt;
+  &lt;li&gt;decoder consists of a uni-directional GRU-RNN($s_{i}=f(s_{i-1}, y_{i-1}, c_{i})$)&lt;/li&gt;
+  &lt;li&gt;attention mechanism over the source-hidden states&lt;/li&gt;
+  &lt;li&gt;a soft-max layer over target vocabulary to generate words&lt;/li&gt;
+  &lt;li&gt;large vocabulary ‘trick’ -LVT(target vocab+source document vocab in a batch)&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;&lt;strong&gt;2&lt;/strong&gt;. Capturing Keywords using Feature-rich Encoder.
+encoder的输入为word embedding+NER tags+TF+IDF+POS&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;3&lt;/strong&gt;. Modeling Rare/Unseen Words using Switching Generator-Pointer
+起源于LVT，每次生成计算switch，为1则使用target vocab，为0使用pointer从原文复制单词。switch概率公式如下：
+&lt;script type=&quot;math/tex&quot;&gt;% &lt;![CDATA[
+\begin{aligned} P\left(s_{i}=1\right) &amp;=\sigma\left(\mathbf{v}^{s} \cdot\left(\mathbf{W}_{h}^{s} \mathbf{h}_{i}+\mathbf{W}_{e}^{s} \mathbf{E}\left[o_{i-1}\right]\right.\right.\\ &amp;+\mathbf{W}_{c}^{s} \mathbf{c}_{i}+\mathbf{b}^{s} ) ) \end{aligned} %]]&gt;&lt;/script&gt;
+指向各个单词的概率为，i为decoder中位置，j为encoder中位置：
+&lt;script type=&quot;math/tex&quot;&gt;% &lt;![CDATA[
+\begin{aligned} P_{i}^{a}(j) &amp; \propto \exp \left(\mathbf{v}^{a} \cdot\left(\mathbf{W}_{h}^{a} \mathbf{h}_{i-1}+\mathbf{W}_{e}^{a} \mathbf{E}\left[o_{i-1}\right]\right.\right.\\ &amp;+\mathbf{W}_{c}^{a} \mathbf{h}_{j}^{d}+\mathbf{b}^{a} ) ) \end{aligned} %]]&gt;&lt;/script&gt;&lt;/p&gt;
+
+&lt;p&gt;模型的目标函数为，$g_i$是switch的真实值，只在训练阶段才有：
+&lt;script type=&quot;math/tex&quot;&gt;\begin{array}{l}{\log P(\mathbf{y} | \mathbf{x})=\sum_{i}\left(g_{i} \log \left\{P\left(y_{i} | \mathbf{y}_{-i}, \mathbf{x}\right) P\left(s_{i}\right)\right\}\right.} \\ {+\left(1-g_{i}\right) \log \left\{P\left(p(i) | \mathbf{y}_{-i}, \mathbf{x}\right)\left(1-P\left(s_{i}\right)\right)\right\} )}\end{array}&lt;/script&gt;
+模型结构如下，计算switch时缺少attention连线
+&lt;img src=&quot;..\assets\post_image\en_de.png&quot; alt=&quot;模型结构&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;4&lt;/strong&gt;.  Capturing Hierarchical Document Structure with Hierarchical Attention
+计算context vector $c_t$时使用hierarchical attention，对上文的attention进一步处理而已
+&lt;script type=&quot;math/tex&quot;&gt;P^{a}(j)=\frac{P_{w}^{a}(j) P_{s}^{a}(s(j))}{\sum_{k=1}^{N_{d}} P_{w}^{a}(k) P_{s}^{a}(s(k))}&lt;/script&gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;2-abstractive-document-summarization-with-a-graph-based-attentional-neural-model2017-acl&quot;&gt;2. Abstractive Document Summarization with a Graph-Based Attentional Neural Model(2017 ACL)&lt;/h2&gt;
+
+&lt;h3 id=&quot;problems-to-solve-1&quot;&gt;problems to solve&lt;/h3&gt;
+&lt;ul&gt;
+  &lt;li&gt;key factor of summarization: saliency, fluency, coherence, and novelty&lt;/li&gt;
+  &lt;li&gt;neural generation are naturally good at fluency, saliency has not been addressed&lt;/li&gt;
+  &lt;li&gt;generate long sequences; same sentences or phrases are often repeated in the output&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&quot;contribution-1&quot;&gt;contribution&lt;/h3&gt;
+&lt;ul&gt;
+  &lt;li&gt;discover the salient information of a document&lt;/li&gt;
+  &lt;li&gt;a novel graph-based attention mechanism&lt;/li&gt;
+  &lt;li&gt;a hierarchical decoding algorithm with a reference mechanism&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&quot;model-structure-1&quot;&gt;model structure&lt;/h3&gt;
+&lt;p&gt;The left denotes the traditional Bahdanauet’s attention [$s_{i}=f(s_{i-1}, y_{i-1}, c_{i})$], while the right half denotes the graph-based attention.
+&lt;img src=&quot;..\assets\post_image\graph-based attention.png&quot; alt=&quot;graph-based attention&quot; /&gt;&lt;/p&gt;
+
 &lt;ol&gt;
-  &lt;li&gt;Encoder-Decoder RNN with Attention. 基本模型依据&lt;a href=&quot;https://arxiv.org/pdf/1409.0473v7.pdf&quot; title=&quot;Neural machine translation by jointly learning to align and translate&quot;&gt;Bahdanau&lt;/a&gt;提出的模型。
-    &lt;ul&gt;
-      &lt;li&gt;encoder consists of a bidirectional GRU-RNN&lt;/li&gt;
-      &lt;li&gt;decoder consists of a uni-directional GRU-RNN($s_{i}=f(s_{i-1}, y_{i-1}, c_{i})$)&lt;/li&gt;
-      &lt;li&gt;attention mechanism over the source-hidden states&lt;/li&gt;
-      &lt;li&gt;a soft-max layer over target vocabulary to generate words&lt;/li&gt;
-      &lt;li&gt;&lt;/li&gt;
-    &lt;/ul&gt;
+  &lt;li&gt;hierarchical encoder-decoder framework&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;$\alpha_i^j$ indicates how much the $i$-th original sentence $s_i$ contributes to generating the $j$-th sentence in summary. $c_j$ is the context vector.
+&lt;script type=&quot;math/tex&quot;&gt;\mathbf{c}_{j}=\sum_{i} \alpha_{i}^{j} \mathbf{h}_{i}&lt;/script&gt;&lt;/p&gt;
+
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;\alpha_{i}^{j}=\frac{e^{\eta\left(\mathbf{h}_{i}, \mathbf{h}_{j}^{\prime}\right)}}{\sum_{l} e^{\eta\left(\mathbf{h}_{l},\mathbf{h}_{j}^{\prime}\right)}}&lt;/script&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;
+    &lt;p&gt;graph-based attention&lt;/p&gt;
+
+    &lt;p&gt;Traditional attention methods not good at judging which sentences are more important to a document. &lt;em&gt;A sentence is important if it’s heavily linked with many important sentences according to Pagerank algorithm.&lt;/em&gt; $W(i,j) = h_i^TMh_j$ is the adjacent matrix. $\mathbf{y} \in \mathcal{R}^{n}$ with all elements equal to $\frac{1}{n}$. The importance score of each sentence is :
+&lt;script type=&quot;math/tex&quot;&gt;\mathbf{f}=(1-\lambda)\left(I-\lambda W D^{-1}\right)^{-1} \mathbf{y}&lt;/script&gt;&lt;/p&gt;
   &lt;/li&gt;
 &lt;/ol&gt;
 
-&lt;p&gt;$x^2+cos(\theta)$&lt;/p&gt;
+&lt;p&gt;Further, we want compute the rank scores of the original sentences regarding $h_j$. Applying the idea of topic-sensitive pagerank, which alters $\mathbf{y}$.&lt;/p&gt;
 
-&lt;script type=&quot;math/tex; mode=display&quot;&gt;\sum_{i=1}^n a_i=0&lt;/script&gt;</content><author><name>true</name></author><summary type="html">summarization</summary></entry><entry><title type="html">Welcome to Jekyll!</title><link href="http://localhost:4000/2018/05/17/welcome-to-jekyll.html" rel="alternate" type="text/html" title="Welcome to Jekyll!" /><published>2018-05-17T14:05:21+08:00</published><updated>2018-05-17T14:05:21+08:00</updated><id>http://localhost:4000/2018/05/17/welcome-to-jekyll</id><content type="html" xml:base="http://localhost:4000/2018/05/17/welcome-to-jekyll.html">&lt;p&gt;You’ll find this post in your &lt;code class=&quot;highlighter-rouge&quot;&gt;_posts&lt;/code&gt; directory. Go ahead and edit it and re-build the site to see your changes. You can rebuild the site in many different ways, but the most common way is to run &lt;code class=&quot;highlighter-rouge&quot;&gt;jekyll serve&lt;/code&gt;, which launches a web server and auto-regenerates your site when a file is updated.&lt;/p&gt;
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;% &lt;![CDATA[
+\mathbf{y}_{T}=\left\{\begin{array}{ll}{\frac{1}{|T|}} &amp; {i \in T} \\ {0} &amp; {i \notin T}\end{array}\right. %]]&gt;&lt;/script&gt;
+
+&lt;p&gt;In order to penalize the model from attending to previously attended sentences. The graph-based attention is finally computed as:&lt;/p&gt;
+
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;\alpha_{i}^{j}=\frac{\max \left(f_{i}^{j}-f_{i}^{j-1}, 0\right)}{\sum_{l}\left(\max \left(f_{l}^{j}-f_{l}^{j-1}, 0\right)\right)}&lt;/script&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;
+    &lt;p&gt;model training
+loss function:
+&lt;script type=&quot;math/tex&quot;&gt;\mathcal{L}=\sum_{(Y, X) \in \mathcal{D}}-\log p(Y | X ; \theta)&lt;/script&gt;&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;hierarchical decoding algorithm&lt;/p&gt;
+
+    &lt;p&gt;A beam search strategy may help to alleviate the repetition in a sentence, but the &lt;strong&gt;repetition&lt;/strong&gt; in the whole generated summary is remained a problem. Sentence-level beam search is realized by maximizing the accumulated score of all the sentences generated.&lt;/p&gt;
+
+    &lt;p&gt;We add an additional term to the score $\tilde{p}\left(y_{\tau}\right)$, ref is a function calculates the ratio of bigram overlap between two texts.
+&lt;script type=&quot;math/tex&quot;&gt;score(\tilde{y_{\tau}}) = \tilde{p}\left(y_{\tau}\right)+
+\gamma\left(\operatorname{ref}\left(Y_{\tau-1}+y_{\tau}, s_{*}\right)-\operatorname{ref}\left(Y_{\tau-1}, s_{*}\right)\right)&lt;/script&gt;&lt;/p&gt;
+  &lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h2 id=&quot;3-a-deep-reinforced-model-for-abstractive-summarization2018-iclr&quot;&gt;3. A DEEP REINFORCED MODEL FOR ABSTRACTIVE SUMMARIZATION(2018 ICLR)&lt;/h2&gt;
+&lt;h3 id=&quot;problem&quot;&gt;problem&lt;/h3&gt;
+&lt;ul&gt;
+  &lt;li&gt;repeating phrase problem&lt;/li&gt;
+  &lt;li&gt;exposure bias&lt;/li&gt;
+  &lt;li&gt;a large number of summaries are potentially valid, which MLL objective doesn’t take this flexibility into account&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&quot;contribution-2&quot;&gt;contribution&lt;/h3&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;intra-temporal attention in encoder-decoder&lt;/li&gt;
+  &lt;li&gt;new objective function combining the maximum-likelihood-entropy loss with rl objective&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;&lt;img src=&quot;..\assets\post_image\deep_reinforce.png&quot; alt=&quot;deep_reinforce&quot; /&gt;&lt;/p&gt;
+
+&lt;h3 id=&quot;model-structure-2&quot;&gt;model structure&lt;/h3&gt;
+
+&lt;p&gt;3 key element: $c_t^e, c_t^d, h_t^d$&lt;/p&gt;
+
+&lt;p&gt;$c_t^e$ is the inpute context vectore, $c_t^d$ is the decoder context decoder, $h_t^d$ is the hidden state vector of decoder at time step $t$.&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;
+    &lt;script type=&quot;math/tex; mode=display&quot;&gt;f\left(h_{t}^{d}, h_{i}^{e}\right)=h_{t}^{d^{T}} W_{\mathrm{attn}}^{e} h_{i}^{e}&lt;/script&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;e_{t i}=f\left(h_{t}^{d}, h_{i}^{e}\right)&lt;/script&gt;
+
+&lt;p&gt;define new temporal attention score, penalizing input tokens that have obtained high attention scores in past attention steps.&lt;/p&gt;
+
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;% &lt;![CDATA[
+e_{t i}^{\prime}=\left\{\begin{array}{ll}{\exp \left(e_{t i}\right)} &amp; {\text { if } t=1} \\ {\frac{\exp \left(e_{t i}\right)}{\sum_{j=1}^{t-1} \exp \left(e_{j i}\right)}} &amp; {\text { otherwise }}\end{array}\right. %]]&gt;&lt;/script&gt;
+
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;\alpha_{t i}^{e}=\frac{e_{t i}^{\prime}}{\sum_{j=1}^{n} e_{t j}^{\prime}}&lt;/script&gt;
+
+&lt;p&gt;obtain final context vector, a weighted sum of all hidden vector in encoder. It differs at different decoding step $t$.&lt;/p&gt;
+
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;c_{t}^{e}=\sum_{i=1}^{n} \alpha_{t i}^{e} h_{i}^{e}&lt;/script&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;similar as the way we obtain $c_t^e$. To further avoid repeating, we can incorporate more information about the previously decoded sequence into the decoder.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;e_{t t^{\prime}}^{d}=h_{t}^{d^{T}} W_{\mathrm{atn}}^{d} h_{t^{\prime}}^{d}&lt;/script&gt;
+
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;\alpha_{t t^{\prime}}^{d}=\frac{\exp \left(e_{t t^{\prime}}^{d}\right)}{\sum_{j=1}^{t-1} \exp \left(e_{t j}^{d}\right)}&lt;/script&gt;
+
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;c_{t}^{d}=\sum_{j=1}^{t-1} \alpha_{t j}^{d} h_{j}^{d}&lt;/script&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;adopt switch function $u_t$ in generation process.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;p\left(u_{t}=1\right)=\sigma\left(W_{u}\left[h_{t}^{d}\left\|c_{t}^{e}\right\| c_{t}^{d}\right]+b_{u}\right)&lt;/script&gt;
+
+&lt;p&gt;same as pointer network, tradition generation probability is:&lt;/p&gt;
+
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;p\left(y_{t} | u_{t}=0\right)=\operatorname{softmax}\left(W_{\mathrm{out}}\left[h_{t}^{d}\left\|c_{t}^{e}\right\| c_{t}^{d}\right]+b_{\mathrm{out}}\right)&lt;/script&gt;
+
+&lt;p&gt;the copy probability is defined as:&lt;/p&gt;
+
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;p\left(y_{t}=x_{i} | u_{t}=1\right)=\alpha_{t i}^{e}&lt;/script&gt;
+
+&lt;h3 id=&quot;objective&quot;&gt;objective&lt;/h3&gt;
+&lt;p&gt;combine two objective, $\hat{y}$ is the baseline output maximizing the output probability distribution at each time step, $y^s$ is obtained by sampling from the probability distribution at each time step $t$(the whole sentence?), $y^{*}$ is ground truth, $r(y)$ is the reward function,&lt;/p&gt;
+
+&lt;p&gt;&lt;script type=&quot;math/tex&quot;&gt;L_{m l}=-\sum_{t=1}^{n^{\prime}} \log p\left(y_{t}^{*} | y_{1}^{*}, \ldots, y_{t-1}^{*}, x\right)&lt;/script&gt;
+&lt;script type=&quot;math/tex&quot;&gt;L_{r l}=\left(r(\hat{y})-r\left(y^{s}\right)\right) \sum_{t=1}^{n^{\prime}} \log p\left(y_{t}^{s} | y_{1}^{s}, \ldots, y_{t-1}^{s}, x\right)&lt;/script&gt;
+&lt;script type=&quot;math/tex&quot;&gt;L_{\text {mixed}}=\gamma L_{r l}+(1-\gamma) L_{m l}&lt;/script&gt;&lt;/p&gt;
+
+&lt;h3 id=&quot;trick&quot;&gt;trick&lt;/h3&gt;
+&lt;ul&gt;
+  &lt;li&gt;ground-truth summaries almost never contain the same trigram twice&lt;/li&gt;
+  &lt;li&gt;introduce some weight-sharing between this embedding matrix and the $W_{out}$ matrix of the token generation layer&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&quot;4-improving-abstraction-in-text-summarization2018-emnlp&quot;&gt;4. Improving Abstraction in Text Summarization(2018 EMNLP)&lt;/h2&gt;
+&lt;h3 id=&quot;problem-1&quot;&gt;problem&lt;/h3&gt;
+&lt;ul&gt;
+  &lt;li&gt;word overlap metrics do not capture the abstractive nature
+    &lt;h3 id=&quot;contribution-3&quot;&gt;contribution&lt;/h3&gt;
+  &lt;/li&gt;
+  &lt;li&gt;decouples the &lt;strong&gt;extraction&lt;/strong&gt; and &lt;strong&gt;generation&lt;/strong&gt; responsibilities of the decoder by factoring it into a &lt;strong&gt;contextual network&lt;/strong&gt; and a &lt;strong&gt;language model&lt;/strong&gt;.&lt;/li&gt;
+  &lt;li&gt;a mixed objective that jointly optimizes the &lt;strong&gt;n-gram overlap&lt;/strong&gt; with the ground-truth summary while encouraging &lt;strong&gt;abstraction&lt;/strong&gt;.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&quot;model-structure-3&quot;&gt;model structure&lt;/h3&gt;
+
+&lt;h4 id=&quot;contextual-network-the-same-as-above&quot;&gt;&lt;img src=&quot;..\assets\post_image\improve_rl.png&quot; alt=&quot;improve_rl&quot; /&gt;contextual network the same as above&lt;/h4&gt;
+
+&lt;h4 id=&quot;language-model&quot;&gt;language model&lt;/h4&gt;
+
+&lt;p&gt;The input of language model is the same as decoder at each time step $t$. Combing $h^{lm}&lt;em&gt;t$ with $[h&lt;/em&gt;{t}^{d}|c_{t}^{e}| c_{t}^{d}]$, we have $h^{fuse}_t$
+&lt;script type=&quot;math/tex&quot;&gt;% &lt;![CDATA[
+\begin{aligned} f_{t} &amp;=\operatorname{sigmoid}\left(W^{\operatorname{lm}}\left[r_{t} ; h_{3, t}^{\operatorname{lm}}\right]+b^{\operatorname{lm}}\right) \\ g_{t} &amp;=W^{\mathrm{fuse}}\left(\left[r_{t} ; g_{t} \odot h_{3, t}^{\operatorname{lm}}\right]\right)+b^{\mathrm{fuse}} \\ h_{t}^{\mathrm{fuse}} &amp;=\operatorname{ReLU}\left(g_{t}\right) \end{aligned} %]]&gt;&lt;/script&gt;&lt;/p&gt;
+
+&lt;h4 id=&quot;abstractive-reward&quot;&gt;abstractive reward&lt;/h4&gt;
+
+&lt;p&gt;changing the the reward function  $r(y)$.&lt;/p&gt;
+
+&lt;h2 id=&quot;5-summarunner2017-aaai&quot;&gt;5. SummaRuNNer(2017 AAAI)&lt;/h2&gt;
+
+&lt;h3 id=&quot;problem-2&quot;&gt;problem&lt;/h3&gt;
+
+&lt;h3 id=&quot;contribution-4&quot;&gt;contribution&lt;/h3&gt;
+
+&lt;h3 id=&quot;model-structure-4&quot;&gt;model structure&lt;/h3&gt;
+
+&lt;p&gt;&lt;img src=&quot;..\assets\post_image\SummaRuNNer.png&quot; alt=&quot;SummaRuNNer&quot; /&gt;&lt;/p&gt;
+
+&lt;h3 id=&quot;extractive-training&quot;&gt;extractive training&lt;/h3&gt;
+
+&lt;p&gt;The first layer of the RNN runs at the word level, second layer of bi-directional RNN that runs at the sentence-level. Using average pooling to get sentence or document representation.
+&lt;script type=&quot;math/tex&quot;&gt;\mathbf{d}=\tanh \left(W_{d} \frac{1}{N_{d}} \sum_{j=1}^{N^{d}}\left[\mathbf{h}_{j}^{f}, \mathbf{h}_{j}^{b}\right]+\mathbf{b}\right)&lt;/script&gt;&lt;/p&gt;
+
+&lt;p&gt;The binary decision is defined as below. Each row represents content, salience, novelty, absolute and relative positional embedding respectively.
+&lt;script type=&quot;math/tex&quot;&gt;\begin{array}{r}{P\left(y_{j}=1 | \mathbf{h}_{j}, \mathbf{s}_{j}, \mathbf{d}\right)=\sigma\left(W_{c} \mathbf{h}_{j}\right.} \\ {+\mathbf{h}_{j}^{T} W_{s} \mathbf{d}} \\ {-\mathbf{h}_{j}^{T} W_{r} \tanh \left(\mathbf{s}_{\mathbf{j}}\right)} \\ {+W_{a p} \mathbf{p}_{j}^{r}} \\ {+W_{r p} \mathbf{p}_{j}^{r}} \\ {+b )}\end{array}&lt;/script&gt;
+&lt;script type=&quot;math/tex&quot;&gt;\mathbf{s}_{j}=\sum_{i=1}^{j-1} \mathbf{h}_{i} P\left(y_{i}=1 | \mathbf{h}_{i}, \mathbf{s}_{i}, \mathbf{d}\right)&lt;/script&gt;&lt;/p&gt;
+
+&lt;p&gt;The objective is to minimize the negative log-likelihood of the observed labels at training time:&lt;/p&gt;
+
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;% &lt;![CDATA[
+\begin{aligned} l(\mathbf{W}, \mathbf{b}) &amp;=-\sum_{d=1}^{N} \sum_{j=1}^{N_{d}}\left(y_{j}^{d} \log P\left(y_{j}^{d}=1 | \mathbf{h}_{j}^{d}, \mathbf{s}_{j}^{d}, \mathbf{d}_{d}\right)\right.\\ &amp;+\left(1-y_{j}^{d}\right) \log \left(1-P\left(y_{j}^{d}=1 | \mathbf{h}_{j}^{d}, \mathbf{s}_{j}^{d}, \mathbf{d}_{d}\right)\right) \end{aligned} %]]&gt;&lt;/script&gt;
+
+&lt;h3 id=&quot;how-to-get-extractive-label&quot;&gt;how to get extractive label&lt;/h3&gt;
+
+&lt;p&gt;We employ a greedy approach, where we add one sentence at a time incrementally to the summary, such that the Rouge score of the current set of selected sentences is maximized with respect to the entire summary.&lt;/p&gt;
+
+&lt;h3 id=&quot;abstractive-training&quot;&gt;abstractive training&lt;/h3&gt;
+
+&lt;p&gt;We need to label sentences in the document for extractive training, which will bring loss. This paper propose a novel training technique to train SummaRuNNer abstractively. We &lt;strong&gt;couple the initial model with a RNN decoder&lt;/strong&gt; that models the generation of abstractive summaries at training time only. We modify the first three equations of GRU based RNN, $s_{-1}$ is the summary representation computed at the last sentence of the sentence-level bidirectional RNN. It’s the only bridge between the initial model and the coupled decoder.&lt;/p&gt;
+
+&lt;p&gt;&lt;script type=&quot;math/tex&quot;&gt;% &lt;![CDATA[
+\begin{aligned} \mathbf{u}_{j} &amp;=\sigma\left(\mathbf{W}_{u x} \mathbf{x}_{j}+\mathbf{W}_{u h} \mathbf{h}_{j-1}+\mathbf{b}_{u}\right) \\ \mathbf{r}_{j} &amp;=\sigma\left(\mathbf{W}_{r x} \mathbf{x}_{j}+\mathbf{W}_{r h} \mathbf{h}_{j-1}+\mathbf{b}_{r}\right) \\ \mathbf{h}_{j}^{\prime} &amp;=\tanh \left(\mathbf{W}_{h x} \mathbf{x}_{j}+\mathbf{W}_{h h}\left(\mathbf{r}_{j} \odot \mathbf{h}_{j-1}\right)+\mathbf{b}_{h}\right) \\ \mathbf{h}_{j} &amp;=\left(1-\mathbf{u}_{j}\right) \odot \mathbf{h}_{j}^{\prime}+\mathbf{u}_{j} \odot \mathbf{h}_{j-1} \end{aligned} %]]&gt;&lt;/script&gt;
+&lt;script type=&quot;math/tex&quot;&gt;% &lt;![CDATA[
+\begin{array}{ll}{\mathbf{u}_{k}=} &amp; {\sigma\left(\mathbf{W}_{u x}^{\prime} \mathbf{x}_{k}+\mathbf{W}_{u h}^{\prime} \mathbf{h}_{k-1}+\mathbf{W}_{u c}^{\prime} \mathbf{s}_{-1}+\mathbf{b}_{u}^{\prime}\right)} \\ {\mathbf{r}_{k}=} &amp; {\sigma\left(\mathbf{W}^{\prime} r x_{k}+\mathbf{W}_{r h}^{\prime} \mathbf{h}_{k-1}+\mathbf{W}_{r c}^{\prime} \mathbf{s}_{-1}+\mathbf{b}_{r}^{\prime}\right)} \\ {\mathbf{h}_{k}^{\prime}=} &amp; {\tanh \left(\mathbf{W}_{h x}^{\prime} \mathbf{x}_{k}+\mathbf{W}_{h h}^{\prime}\left(\mathbf{r}_{k} \odot \mathbf{h}_{k-1}\right)+\right.}{\mathbf{W}_{h c}^{\prime} \mathbf{s}_{-1}+\mathbf{b}_{h}^{\prime} )}\end{array} %]]&gt;&lt;/script&gt;&lt;/p&gt;
+
+&lt;p&gt;The emission at each time-step is determined by a feed-forward layer $f$ followed by a softmax layer that assigns $\mathbf{P}_{k}$&lt;/p&gt;
+
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;% &lt;![CDATA[
+\begin{aligned} \mathbf{f}_{k} &amp;=\tanh \left(\mathbf{W}_{f h}^{\prime} \mathbf{h}_{k}+\mathbf{W}_{f x}^{\prime} \mathbf{x}_{k}+\mathbf{W}^{\prime} f_{c} \mathbf{s}_{-1}+\mathbf{b}_{f}^{\prime}\right) \\ \mathbf{P}_{\mathbf{v}}(\mathbf{w})_{k} &amp;=\operatorname{softmax}\left(\mathbf{W}_{v}^{\prime} \mathbf{f}_{k}+\mathbf{b}_{v}^{\prime}\right) \end{aligned} %]]&gt;&lt;/script&gt;
+
+&lt;p&gt;we minimize the negative log-likelihood of the words in the reference summary as follows.
+&lt;script type=&quot;math/tex&quot;&gt;l\left(\mathbf{W}, \mathbf{b}, \mathbf{W}^{\prime}, \mathbf{b}^{\prime}\right)=-\sum_{k=1}^{N_{s}} \log \left(\mathbf{P}_{\mathbf{v}}\left(w_{k}\right)\right)&lt;/script&gt;
+where $N_s$ is the number of words in the reference summary.&lt;/p&gt;</content><author><name>true</name></author><summary type="html">summarization</summary></entry><entry><title type="html">Welcome to Jekyll!</title><link href="http://localhost:4000/2018/05/17/welcome-to-jekyll.html" rel="alternate" type="text/html" title="Welcome to Jekyll!" /><published>2018-05-17T14:05:21+08:00</published><updated>2018-05-17T14:05:21+08:00</updated><id>http://localhost:4000/2018/05/17/welcome-to-jekyll</id><content type="html" xml:base="http://localhost:4000/2018/05/17/welcome-to-jekyll.html">&lt;p&gt;You’ll find this post in your &lt;code class=&quot;highlighter-rouge&quot;&gt;_posts&lt;/code&gt; directory. Go ahead and edit it and re-build the site to see your changes. You can rebuild the site in many different ways, but the most common way is to run &lt;code class=&quot;highlighter-rouge&quot;&gt;jekyll serve&lt;/code&gt;, which launches a web server and auto-regenerates your site when a file is updated.&lt;/p&gt;
 
 &lt;p&gt;To add new posts, simply add a file in the &lt;code class=&quot;highlighter-rouge&quot;&gt;_posts&lt;/code&gt; directory that follows the convention &lt;code class=&quot;highlighter-rouge&quot;&gt;YYYY-MM-DD-name-of-post.ext&lt;/code&gt; and includes the necessary front matter. Take a look at the source for this post to get an idea about how it works.&lt;/p&gt;
 

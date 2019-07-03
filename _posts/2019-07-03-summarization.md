@@ -39,7 +39,7 @@ $$
 \begin{array}{l}{\log P(\mathbf{y} | \mathbf{x})=\sum_{i}\left(g_{i} \log \left\{P\left(y_{i} | \mathbf{y}_{-i}, \mathbf{x}\right) P\left(s_{i}\right)\right\}\right.} \\ {+\left(1-g_{i}\right) \log \left\{P\left(p(i) | \mathbf{y}_{-i}, \mathbf{x}\right)\left(1-P\left(s_{i}\right)\right)\right\} )}\end{array}
 $$
 模型结构如下，计算switch时缺少attention连线
-![模型结构](D:\allkind\blog\martin6336.github.io\assets\post_image\en_de.png)
+![模型结构](..\assets\post_image\en_de.png)
 
 **4**.  Capturing Hierarchical Document Structure with Hierarchical Attention
 计算context vector $c_t$时使用hierarchical attention，对上文的attention进一步处理而已
@@ -62,7 +62,7 @@ $$
 
 ### model structure
 The left denotes the traditional Bahdanauet's attention [$s_{i}=f(s_{i-1}, y_{i-1}, c_{i})$], while the right half denotes the graph-based attention.
-![graph-based attention](D:\allkind\blog\martin6336.github.io\assets\post_image\graph-based attention.png)
+![graph-based attention](..\assets\post_image\graph-based attention.png)
 
 1. hierarchical encoder-decoder framework
 
@@ -123,7 +123,7 @@ $$
 - intra-temporal attention in encoder-decoder
 - new objective function combining the maximum-likelihood-entropy loss with rl objective
 
-![deep_reinforce](D:\allkind\blog\martin6336.github.io\assets\post_image\deep_reinforce.png)
+![deep_reinforce](..\assets\post_image\deep_reinforce.png)
 
 ### model structure
 
@@ -217,7 +217,7 @@ $$
 
 ### model structure
 
-#### ![improve_rl](D:\allkind\blog\martin6336.github.io\assets\post_image\improve_rl.png)contextual network the same as above
+#### ![improve_rl](..\assets\post_image\improve_rl.png)contextual network the same as above
 
 #### language model
 
@@ -240,7 +240,7 @@ changing the the reward function  $r(y)$.
 
 ### model structure
 
-![SummaRuNNer](D:\allkind\blog\martin6336.github.io\assets\post_image\SummaRuNNer.png)
+![SummaRuNNer](..\assets\post_image\SummaRuNNer.png)
 
 ### extractive training
 
