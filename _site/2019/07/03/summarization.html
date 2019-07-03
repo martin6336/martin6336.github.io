@@ -1,0 +1,33 @@
+<h1 id="summarization">summarization</h1>
+
+<h2 id="1abstractive-text-summarization-using-sequence-to-sequence-rnns-and-beyond2016-conll">1,Abstractive Text Summarization using Sequence-to-sequence RNNs and Beyond(2016 coNLL)</h2>
+
+<h3 id="problems-to-solve">problems to solve</h3>
+<ul>
+  <li>和MT类似，但是seq2seq的两头没有一一对应关系</li>
+  <li>对信息的压缩 in a lossy manner，MT是loss-less</li>
+</ul>
+
+<h3 id="contribution">contribution</h3>
+<ul>
+  <li>attentional encoder-decoder RNN</li>
+  <li>propose novel models</li>
+  <li>propose a new dataset</li>
+</ul>
+
+<h3 id="model-structure">model structure</h3>
+<ol>
+  <li>Encoder-Decoder RNN with Attention. 基本模型依据<a href="https://arxiv.org/pdf/1409.0473v7.pdf" title="Neural machine translation by jointly learning to align and translate">Bahdanau</a>提出的模型。
+    <ul>
+      <li>encoder consists of a bidirectional GRU-RNN</li>
+      <li>decoder consists of a uni-directional GRU-RNN($s_{i}=f(s_{i-1}, y_{i-1}, c_{i})$)</li>
+      <li>attention mechanism over the source-hidden states</li>
+      <li>a soft-max layer over target vocabulary to generate words</li>
+      <li></li>
+    </ul>
+  </li>
+</ol>
+
+<p>$x^2+cos(\theta)$</p>
+
+<script type="math/tex; mode=display">\sum_{i=1}^n a_i=0</script>
