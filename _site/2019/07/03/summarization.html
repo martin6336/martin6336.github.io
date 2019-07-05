@@ -1,3 +1,4 @@
+
 <h1 id="summarization">summarization</h1>
 
 <h2 id="1-abstractive-text-summarization-using-sequence-to-sequence-rnns-and-beyond2016-conll">1. Abstractive Text Summarization using Sequence-to-sequence RNNs and Beyond(2016 coNLL)</h2>
@@ -40,8 +41,9 @@ encoder的输入为word embedding+NER tags+TF+IDF+POS</p>
 
 <p>模型的目标函数为，$g_i$是switch的真实值，只在训练阶段才有：
 <script type="math/tex">\begin{array}{l}{\log P(\mathbf{y} | \mathbf{x})=\sum_{i}\left(g_{i} \log \left\{P\left(y_{i} | \mathbf{y}_{-i}, \mathbf{x}\right) P\left(s_{i}\right)\right\}\right.} \\ {+\left(1-g_{i}\right) \log \left\{P\left(p(i) | \mathbf{y}_{-i}, \mathbf{x}\right)\left(1-P\left(s_{i}\right)\right)\right\} )}\end{array}</script>
-模型结构如下，计算switch时缺少attention连线
-<img src="..\assets\post_image\en_de.png" alt="模型结构" /></p>
+模型结构如下，计算switch时缺少attention连线</p>
+
+<p><img src="../assets/post_image/en_de.png" alt="模型结构" /></p>
 
 <p><strong>4</strong>.  Capturing Hierarchical Document Structure with Hierarchical Attention
 计算context vector $c_t$时使用hierarchical attention，对上文的attention进一步处理而已

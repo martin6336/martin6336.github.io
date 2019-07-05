@@ -1,3 +1,14 @@
+---
+title: summarization
+date: 2019-07-04 15:32:10
+tags:
+typora-root-url: ./
+
+
+---
+
+
+
 # summarization
 
 ## 1. Abstractive Text Summarization using Sequence-to-sequence RNNs and Beyond(2016 coNLL)
@@ -39,7 +50,10 @@ $$
 \begin{array}{l}{\log P(\mathbf{y} | \mathbf{x})=\sum_{i}\left(g_{i} \log \left\{P\left(y_{i} | \mathbf{y}_{-i}, \mathbf{x}\right) P\left(s_{i}\right)\right\}\right.} \\ {+\left(1-g_{i}\right) \log \left\{P\left(p(i) | \mathbf{y}_{-i}, \mathbf{x}\right)\left(1-P\left(s_{i}\right)\right)\right\} )}\end{array}
 $$
 模型结构如下，计算switch时缺少attention连线
-![模型结构](..\assets\post_image\en_de.png)
+
+![en_de](/../post_image/en_de.png)
+
+
 
 **4**.  Capturing Hierarchical Document Structure with Hierarchical Attention
 计算context vector $c_t$时使用hierarchical attention，对上文的attention进一步处理而已
@@ -62,7 +76,7 @@ $$
 
 ### model structure
 The left denotes the traditional Bahdanauet's attention [$s_{i}=f(s_{i-1}, y_{i-1}, c_{i})$], while the right half denotes the graph-based attention.
-![graph-based attention](..\assets\post_image\graph-based attention.png)
+![graph-based attention](/../post_image/graph-based attention.png)
 
 1. hierarchical encoder-decoder framework
 
@@ -123,7 +137,7 @@ $$
 - intra-temporal attention in encoder-decoder
 - new objective function combining the maximum-likelihood-entropy loss with rl objective
 
-![deep_reinforce](..\assets\post_image\deep_reinforce.png)
+![deep_reinforce](/../post_image/deep_reinforce.png)
 
 ### model structure
 
@@ -217,7 +231,9 @@ $$
 
 ### model structure
 
-#### ![improve_rl](..\assets\post_image\improve_rl.png)contextual network the same as above
+#### ![improve_rl](/../post_image/improve_rl.png)
+
+#### contextual network the same as above
 
 #### language model
 
@@ -240,7 +256,7 @@ changing the the reward function  $r(y)$.
 
 ### model structure
 
-![SummaRuNNer](..\assets\post_image\SummaRuNNer.png)
+![SummaRuNNer](/../post_image/SummaRuNNer.png)
 
 ### extractive training
 
@@ -292,4 +308,175 @@ $$
 where $N_s$ is the number of words in the reference summary.
 
 
+## 6.Fast Abstractive Summarization with Reinforce-Selected Sentence Rewriting(2018 ACL)
 
+### problem
+
+- abstractive model suffers slow and inaccurate encoding of very long documents
+- abstractive model suffers from repetitions
+- a two-stage extractive-abstractive architecture is non-differentiable
+
+### contribution
+
+- a **extractive-abstractive architecture** , in which a extractor agent select salient sentence first, then an abstractive net to rewrite the sentence into summary
+- apply actor-critic policy gradient to train extractor
+- parallel decoding bring speed-up
+
+###  extractive model structure
+
+![sum_fast](/../post_image/sum_fast.png)
+
+- temporal convolutional model
+- a bidirectional LSTM
+- added LSTM(decoder)
+
+temporal convolutional model compute a coarse sentence representation $r_j$; the follow bi-LSTM learning a stronger representation $h_j$ by taking into account all previous and future sentences. 
+
+
+
+- sentence selection
+using a pointer networker(decoder) to extract sentences. The decoder performs a 2-hop attention mechanism
+
+$$
+\begin{aligned} a_{j}^{t} &=v_{g}^{\top} \tanh \left(W_{g 1} h_{j}+W_{g 2} z_{t}\right) \\ \alpha^{t} &=\operatorname{softmax}\left(a^{t}\right) \\ e_{t} &=\sum_{j} \alpha_{j}^{t} W_{g 1} h_{j} \end{aligned}
+$$
+$$
+u_{j}^{t}=\left\{\begin{array}{cc}{v_{p}^{\top} \tanh \left(W_{p 1} h_{j}+W_{p 2} e_{t}\right)} & {\text { if } j_{t} \neq j_{k}} \\ {} & {\forall k<t} \\ {-\infty} & {\text { otherwise }}\end{array}\right.
+$$
+$$
+P\left(j_{t} | j_{1}, \ldots, j_{t-1}\right)=\operatorname{softmax}\left(u^{t}\right)
+$$
+
+where $z_t$ is the ouput of the added lstm
+
+- get the extraction label for each sentence
+we find the most similar document sentences $d_{j_t}$ as below. Given the proxy training labels, the extraction is then trained to minimize the cross-entropy loss.
+
+$$
+j_{t}=\operatorname{argmax}_{i}\left(\operatorname{ROUGE-L}_{r e c a l l}\left(d_{i}, s_{t}\right)\right)
+$$
+
+### abstractive net
+
+Given the training paris(pairing each summary sentence with its extracted document sentence), the network is trained as usual seq2seq model to minimize the cross-entropy loss.
+
+### reinforce-guide extraction
+
+![sum_fast_rl](/../post_image/sum_fast_rl.png)
+
+At each time step $t$, the agent observe the current state $c_t=(D, d_{j_{t-1}})$, sample an action $j_t \sim P(j_{t} | j_{1}, \ldots, j_{t-1})$ to extract a sentence $d_{j_{t}}$ and receive a reward:
+$$
+r(t+1)=\operatorname{ROUGE-L}_{F_{1}}\left(g\left(d_{j_{t}}\right), s_{t}\right)
+$$
+
+Instead of using policy gradient algorithm, we apply a **advantage actor-critic(A2C) network**. We denote the parameters of extractor agent by $\theta=\left\{\theta_{a}, \omega\right\}$ for the decoder and hierarchical encoder respectively.
+
+$$
+A^{\pi_{\theta}}(c, j)=Q^{\pi_{\theta_{a}, \omega}}(c, j)-V^{\pi_{\theta_{a}, \omega}}(c)
+$$
+$$
+\begin{array}{c}{\nabla_{\theta_{a}, \omega} J\left(\theta_{a}, \omega\right)=}  {\mathbb{E}\left[\nabla_{\theta_{a}, \omega} \log \pi_{\theta}(c, j) A^{\pi_{\theta}}(c, j)\right]}\end{array}
+$$
+
+The pointer net treats **EOE** as one of the extraction candidates and hence naturally results in a stop action in the stochastic policy.
+
+### repetition-avoiding reranking
+
+We keep all $k$ sentence candidates generated by beam search, rerank all $k^n$ combinations of the $n$ generated summary sentences. The rank score is the **number of repeated N-grams**. This paper also apply a [diverse decoding algorithm](https://arxiv.org/pdf/1611.08562.pdf)  favoring choosing hypotheses from diverse parents.
+
+![sum_fast_diverse](/../post_image/sum_fast_diverse.png)
+
+## 7.Guiding Generation for Abstractive Text Summarization based on Key Information Guide Network(2018 NAACL)
+### problem
+
+- models are hard to be controlled in the process of generation without guidance, which leads to a lack of **key information**
+
+### contribution
+- combine the extractive model and abstractive model, using the former one to obtain keywords as guidance for the latter one
+- key information guide network, which encode the keywords and integrates it into the abstractive model
+- novel prediction-guide mechanism
+
+### model structure
+
+![sum_key](/../post_image/sum_key.png)
+#### the base encoder-decoder
+the base model is similar with base pointer network
+
+$$
+\begin{aligned} e_{t i} &=v^{T} \tanh \left(W_{h} h_{i}+W_{s} s_{t}\right) \\ \alpha_{t}^{e} &=\operatorname{softmax}\left(e_{t}\right) \\ c_{t} &=\sum_{i=1}^{N} \alpha_{t i}^{e} h_{i} \end{aligned}
+$$
+
+$c_t$ is the context vector, which represents what has been read from the source text.
+
+$$
+P\left(y_{t} | y_{1}, \ldots, y_{t-1}\right)=\operatorname{softmax}\left(f\left(s_{t}, c_{t}\right)\right)
+$$
+
+#### use key information to improve model
+extract keywords from the text by using **TextRank** algorithm, feed the keywords one-by-one into the key information network(bi-lstm). We concatenate $\overline{h}_{1}$ and $\vec{h}_{1}$ as the key information representation.
+
+$$
+k=\left[\begin{array}{c}{\overline{h}_{1}} \\ {\vec{h}_{n}}\end{array}\right]
+$$
+
+For the traditional generation part, changing the above equation into:
+$$
+e_{t i}=v^{T} \tanh \left(W_{h} h_{i}+W_{s} s_{t}+W_{k} k\right)
+$$
+
+$$
+P_{v}\left(y_{t} | y_{1}, \ldots, y_{t-1}\right)=\operatorname{softmax}\left(f\left(s_{t}, c_{t}, k\right)\right)
+$$
+
+For the pointer net, a switch $p_{sw}$ is needed.
+$$
+p_{s w}=\sigma\left(w_{k}^{T} k+w_{c}^{T} c_{t}+w_{s_{t}}^{T} s_{t}+b_{s w}\right)
+$$
+The final probability distribution to predict the next word:
+$$
+\begin{aligned} P\left(y_{t}=w\right) &=p_{s w} P_{v}\left(y_{t}=w\right) +\left(1-p_{s w}\right) \sum_{i : w_{i}=w} \alpha_{t i}^{e} \end{aligned}
+$$
+The overall loss is:
+$$
+L=-\frac{1}{T} \sum_{t=0}^{T} \log P\left(y_{t}^{*} | y_{1}^{*}, \ldots, y_{t-1}^{*}, x\right)
+$$
+
+#### prediction-guide mechanism at test time
+
+[prediction-guide mechanism](http://www.andrew.cmu.edu/user/hanqing1/data/vnn4nmt.pdf) is based on pairwise ranking loss. It's a single-layer feed forward network with sigmoid activation function. Compute the score of two partial summaries $y_{p1}$ and $y_{p2}$.
+$$
+\operatorname{Avg} \operatorname{Cos}\left(x, y_{p}\right)=\frac{1}{M} \sum_{\overline{s} \in S\left(y_{p}\right)} \cos (\overline{s}, k)
+$$
+
+$$
+\overline{s}_{t}=\frac{1}{t} \sum_{l=1}^{t} s_{l}
+$$
+
+we hope the predicted value of $v(s,y_{p1})$ can be larger that $v(s,y_{p1})$ if $AvgCos(x,y_{p1})>AvgCos(x,y_{p2})$. So the loss function of the prediction-guide network is as follows:
+$$
+L_{p g}=\sum_{\left(x, y_{p 1}, y_{p 2}\right)} e^{v\left(x, y_{p 2}\right)-v\left(x, y_{p 1}\right)}
+$$
+where $AvgCos(x,y_{p1})>AvgCos(x,y_{p2})$.
+
+
+
+At test time, we first compute the normalized log probability of each candidate, and then linearly combine it with the value predicted by the prediction-guide network. $x=\left\{x_{1}, x_{2}, \dots, x_{N}\right\}$ is the summary sequence. The final prediction probability is defined as:
+$$
+\alpha \times \log P(y | x)+(1-\alpha) \times \log v(x, y)
+$$
+
+
+
+
+## 8.Hierarchical Structured Self-Attentive Model for Extractive Document Summarization (HSSAS)(2018 IEEE)
+
+### problem
+
+- carrying the semantics along all-time steps of a recurrent model is relatively hard and not necessary
+
+- the summary lies only on vector space that can hardly capture multi-topical content
+
+- how to mirror the hierarchical structure of the document
+- how to extract the most important sentences
+
+### contribution(SummaRuNNer)
