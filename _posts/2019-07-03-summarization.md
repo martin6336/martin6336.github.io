@@ -2,9 +2,9 @@
 title: summarization
 date: 2019-07-04 15:32:10
 tags:
+
+
 typora-root-url: ./
-
-
 ---
 
 
@@ -51,9 +51,7 @@ $$
 $$
 模型结构如下，计算switch时缺少attention连线
 
-![en_de](/../post_image/en_de.png)
-
-
+![en_de](/../assets/post_image/en_de.png)
 
 **4**.  Capturing Hierarchical Document Structure with Hierarchical Attention
 计算context vector $c_t$时使用hierarchical attention，对上文的attention进一步处理而已
@@ -76,7 +74,7 @@ $$
 
 ### model structure
 The left denotes the traditional Bahdanauet's attention [$s_{i}=f(s_{i-1}, y_{i-1}, c_{i})$], while the right half denotes the graph-based attention.
-![graph-based attention](/../post_image/graph-based attention.png)
+![graph-based attention](/../assets/post_image/graph-based attention.png)
 
 1. hierarchical encoder-decoder framework
 
@@ -137,7 +135,7 @@ $$
 - intra-temporal attention in encoder-decoder
 - new objective function combining the maximum-likelihood-entropy loss with rl objective
 
-![deep_reinforce](/../post_image/deep_reinforce.png)
+![deep_reinforce](/../assets/post_image/deep_reinforce.png)
 
 ### model structure
 
