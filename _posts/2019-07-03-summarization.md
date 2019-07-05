@@ -37,24 +37,30 @@ encoder的输入为word embedding+NER tags+TF+IDF+POS
 
 **3**. Modeling Rare/Unseen Words using Switching Generator-Pointer
 起源于LVT，每次生成计算switch，为1则使用target vocab，为0使用pointer从原文复制单词。switch概率公式如下：
+
 $$
 \begin{aligned} P\left(s_{i}=1\right) &=\sigma\left(\mathbf{v}^{s} \cdot\left(\mathbf{W}_{h}^{s} \mathbf{h}_{i}+\mathbf{W}_{e}^{s} \mathbf{E}\left[o_{i-1}\right]\right.\right.\\ &+\mathbf{W}_{c}^{s} \mathbf{c}_{i}+\mathbf{b}^{s} ) ) \end{aligned}
 $$
+
 指向各个单词的概率为，i为decoder中位置，j为encoder中位置：
+
 $$
 \begin{aligned} P_{i}^{a}(j) & \propto \exp \left(\mathbf{v}^{a} \cdot\left(\mathbf{W}_{h}^{a} \mathbf{h}_{i-1}+\mathbf{W}_{e}^{a} \mathbf{E}\left[o_{i-1}\right]\right.\right.\\ &+\mathbf{W}_{c}^{a} \mathbf{h}_{j}^{d}+\mathbf{b}^{a} ) ) \end{aligned}
 $$
 
 模型的目标函数为，$g_i$是switch的真实值，只在训练阶段才有：
+
 $$
 \begin{array}{l}{\log P(\mathbf{y} | \mathbf{x})=\sum_{i}\left(g_{i} \log \left\{P\left(y_{i} | \mathbf{y}_{-i}, \mathbf{x}\right) P\left(s_{i}\right)\right\}\right.} \\ {+\left(1-g_{i}\right) \log \left\{P\left(p(i) | \mathbf{y}_{-i}, \mathbf{x}\right)\left(1-P\left(s_{i}\right)\right)\right\} )}\end{array}
 $$
+
 模型结构如下，计算switch时缺少attention连线
 
 ![en_de](/../assets/post_image/en_de.png)
 
 **4**.  Capturing Hierarchical Document Structure with Hierarchical Attention
 计算context vector $c_t$时使用hierarchical attention，对上文的attention进一步处理而已
+
 $$
 P^{a}(j)=\frac{P_{w}^{a}(j) P_{s}^{a}(s(j))}{\sum_{k=1}^{N_{d}} P_{w}^{a}(k) P_{s}^{a}(s(k))}
 $$
@@ -79,6 +85,7 @@ The left denotes the traditional Bahdanauet's attention [$s_{i}=f(s_{i-1}, y_{i-
 1. hierarchical encoder-decoder framework
 
 $\alpha_i^j$ indicates how much the $i$-th original sentence $s_i$ contributes to generating the $j$-th sentence in summary. $c_j$ is the context vector.
+
 $$
    \mathbf{c}_{j}=\sum_{i} \alpha_{i}^{j} \mathbf{h}_{i}
 $$
@@ -90,6 +97,7 @@ $$
 2. graph-based attention
 
    Traditional attention methods not good at judging which sentences are more important to a document. *A sentence is important if it's heavily linked with many important sentences according to Pagerank algorithm.* $W(i,j) = h_i^TMh_j$ is the adjacent matrix. $\mathbf{y} \in \mathcal{R}^{n}$ with all elements equal to $\frac{1}{n}$. The importance score of each sentence is :
+
 $$
    \mathbf{f}=(1-\lambda)\left(I-\lambda W D^{-1}\right)^{-1} \mathbf{y}
 $$
@@ -108,6 +116,7 @@ $$
 
 3. model training
 loss function:
+
 $$
    \mathcal{L}=\sum_{(Y, X) \in \mathcal{D}}-\log p(Y | X ; \theta)
 $$
@@ -118,6 +127,7 @@ $$
 	A beam search strategy may help to alleviate the repetition in a sentence, but the **repetition** in the whole generated summary is remained a problem. Sentence-level beam search is realized by maximizing the accumulated score of all the sentences generated.
 
    We add an additional term to the score $\tilde{p}\left(y_{\tau}\right)$, ref is a function calculates the ratio of bigram overlap between two texts.
+
 $$
 score(\tilde{y_{\tau}}) = \tilde{p}\left(y_{\tau}\right)+
 \gamma\left(\operatorname{ref}\left(Y_{\tau-1}+y_{\tau}, s_{*}\right)-\operatorname{ref}\left(Y_{\tau-1}, s_{*}\right)\right)
@@ -209,9 +219,11 @@ combine two objective, $\hat{y}$ is the baseline output maximizing the output pr
 $$
 L_{m l}=-\sum_{t=1}^{n^{\prime}} \log p\left(y_{t}^{*} | y_{1}^{*}, \ldots, y_{t-1}^{*}, x\right)
 $$
+
 $$
 L_{r l}=\left(r(\hat{y})-r\left(y^{s}\right)\right) \sum_{t=1}^{n^{\prime}} \log p\left(y_{t}^{s} | y_{1}^{s}, \ldots, y_{t-1}^{s}, x\right)
 $$
+
 $$
 L_{\text {mixed}}=\gamma L_{r l}+(1-\gamma) L_{m l}
 $$
@@ -235,7 +247,8 @@ $$
 
 #### language model
 
-The input of language model is the same as decoder at each time step $t$. Combing $h^{lm}_t$ with $[h_{t}^{d}|c_{t}^{e}| c_{t}^{d}]$, we have $h^{fuse}_t$
+The input of language model is the same as decoder at each time step $t$. Combing $h^{lm}_t$ with  $[h_{t}^{d}|c_{t}^{e}| c_{t}^{d}]$, we have $h^{fuse}_t$
+
 $$
 \begin{aligned} f_{t} &=\operatorname{sigmoid}\left(W^{\operatorname{lm}}\left[r_{t} ; h_{3, t}^{\operatorname{lm}}\right]+b^{\operatorname{lm}}\right) \\ g_{t} &=W^{\mathrm{fuse}}\left(\left[r_{t} ; g_{t} \odot h_{3, t}^{\operatorname{lm}}\right]\right)+b^{\mathrm{fuse}} \\ h_{t}^{\mathrm{fuse}} &=\operatorname{ReLU}\left(g_{t}\right) \end{aligned}
 $$
@@ -259,14 +272,17 @@ changing the the reward function  $r(y)$.
 ### extractive training
 
 The first layer of the RNN runs at the word level, second layer of bi-directional RNN that runs at the sentence-level. Using average pooling to get sentence or document representation.
+
 $$
 \mathbf{d}=\tanh \left(W_{d} \frac{1}{N_{d}} \sum_{j=1}^{N^{d}}\left[\mathbf{h}_{j}^{f}, \mathbf{h}_{j}^{b}\right]+\mathbf{b}\right)
 $$
 
 The binary decision is defined as below. Each row represents content, salience, novelty, absolute and relative positional embedding respectively.
+
 $$
 \begin{array}{r}{P\left(y_{j}=1 | \mathbf{h}_{j}, \mathbf{s}_{j}, \mathbf{d}\right)=\sigma\left(W_{c} \mathbf{h}_{j}\right.} \\ {+\mathbf{h}_{j}^{T} W_{s} \mathbf{d}} \\ {-\mathbf{h}_{j}^{T} W_{r} \tanh \left(\mathbf{s}_{\mathbf{j}}\right)} \\ {+W_{a p} \mathbf{p}_{j}^{r}} \\ {+W_{r p} \mathbf{p}_{j}^{r}} \\ {+b )}\end{array}
 $$
+
 $$
 \mathbf{s}_{j}=\sum_{i=1}^{j-1} \mathbf{h}_{i} P\left(y_{i}=1 | \mathbf{h}_{i}, \mathbf{s}_{i}, \mathbf{d}\right)
 $$
@@ -289,6 +305,7 @@ We need to label sentences in the document for extractive training, which will b
 $$
 \begin{aligned} \mathbf{u}_{j} &=\sigma\left(\mathbf{W}_{u x} \mathbf{x}_{j}+\mathbf{W}_{u h} \mathbf{h}_{j-1}+\mathbf{b}_{u}\right) \\ \mathbf{r}_{j} &=\sigma\left(\mathbf{W}_{r x} \mathbf{x}_{j}+\mathbf{W}_{r h} \mathbf{h}_{j-1}+\mathbf{b}_{r}\right) \\ \mathbf{h}_{j}^{\prime} &=\tanh \left(\mathbf{W}_{h x} \mathbf{x}_{j}+\mathbf{W}_{h h}\left(\mathbf{r}_{j} \odot \mathbf{h}_{j-1}\right)+\mathbf{b}_{h}\right) \\ \mathbf{h}_{j} &=\left(1-\mathbf{u}_{j}\right) \odot \mathbf{h}_{j}^{\prime}+\mathbf{u}_{j} \odot \mathbf{h}_{j-1} \end{aligned}
 $$
+
 $$
 \begin{array}{ll}{\mathbf{u}_{k}=} & {\sigma\left(\mathbf{W}_{u x}^{\prime} \mathbf{x}_{k}+\mathbf{W}_{u h}^{\prime} \mathbf{h}_{k-1}+\mathbf{W}_{u c}^{\prime} \mathbf{s}_{-1}+\mathbf{b}_{u}^{\prime}\right)} \\ {\mathbf{r}_{k}=} & {\sigma\left(\mathbf{W}^{\prime} r x_{k}+\mathbf{W}_{r h}^{\prime} \mathbf{h}_{k-1}+\mathbf{W}_{r c}^{\prime} \mathbf{s}_{-1}+\mathbf{b}_{r}^{\prime}\right)} \\ {\mathbf{h}_{k}^{\prime}=} & {\tanh \left(\mathbf{W}_{h x}^{\prime} \mathbf{x}_{k}+\mathbf{W}_{h h}^{\prime}\left(\mathbf{r}_{k} \odot \mathbf{h}_{k-1}\right)+\right.}{\mathbf{W}_{h c}^{\prime} \mathbf{s}_{-1}+\mathbf{b}_{h}^{\prime} )}\end{array}
 $$
@@ -338,9 +355,11 @@ using a pointer networker(decoder) to extract sentences. The decoder performs a 
 $$
 \begin{aligned} a_{j}^{t} &=v_{g}^{\top} \tanh \left(W_{g 1} h_{j}+W_{g 2} z_{t}\right) \\ \alpha^{t} &=\operatorname{softmax}\left(a^{t}\right) \\ e_{t} &=\sum_{j} \alpha_{j}^{t} W_{g 1} h_{j} \end{aligned}
 $$
+
 $$
 u_{j}^{t}=\left\{\begin{array}{cc}{v_{p}^{\top} \tanh \left(W_{p 1} h_{j}+W_{p 2} e_{t}\right)} & {\text { if } j_{t} \neq j_{k}} \\ {} & {\forall k<t} \\ {-\infty} & {\text { otherwise }}\end{array}\right.
 $$
+
 $$
 P\left(j_{t} | j_{1}, \ldots, j_{t-1}\right)=\operatorname{softmax}\left(u^{t}\right)
 $$
@@ -363,6 +382,7 @@ Given the training paris(pairing each summary sentence with its extracted docume
 ![sum_fast_rl](/../assets/post_image/sum_fast_rl.png)
 
 At each time step $t$, the agent observe the current state $c_t=(D, d_{j_{t-1}})$, sample an action $j_t \sim P(j_{t} | j_{1}, \ldots, j_{t-1})$ to extract a sentence $d_{j_{t}}$ and receive a reward:
+
 $$
 r(t+1)=\operatorname{ROUGE-L}_{F_{1}}\left(g\left(d_{j_{t}}\right), s_{t}\right)
 $$
@@ -372,6 +392,7 @@ Instead of using policy gradient algorithm, we apply a **advantage actor-critic(
 $$
 A^{\pi_{\theta}}(c, j)=Q^{\pi_{\theta_{a}, \omega}}(c, j)-V^{\pi_{\theta_{a}, \omega}}(c)
 $$
+
 $$
 \begin{array}{c}{\nabla_{\theta_{a}, \omega} J\left(\theta_{a}, \omega\right)=}  {\mathbb{E}\left[\nabla_{\theta_{a}, \omega} \log \pi_{\theta}(c, j) A^{\pi_{\theta}}(c, j)\right]}\end{array}
 $$
@@ -427,14 +448,18 @@ P_{v}\left(y_{t} | y_{1}, \ldots, y_{t-1}\right)=\operatorname{softmax}\left(f\l
 $$
 
 For the pointer net, a switch $p_{sw}$ is needed.
+
 $$
 p_{s w}=\sigma\left(w_{k}^{T} k+w_{c}^{T} c_{t}+w_{s_{t}}^{T} s_{t}+b_{s w}\right)
 $$
 The final probability distribution to predict the next word:
+
 $$
 \begin{aligned} P\left(y_{t}=w\right) &=p_{s w} P_{v}\left(y_{t}=w\right) +\left(1-p_{s w}\right) \sum_{i : w_{i}=w} \alpha_{t i}^{e} \end{aligned}
 $$
+
 The overall loss is:
+
 $$
 L=-\frac{1}{T} \sum_{t=0}^{T} \log P\left(y_{t}^{*} | y_{1}^{*}, \ldots, y_{t-1}^{*}, x\right)
 $$
@@ -451,19 +476,18 @@ $$
 $$
 
 we hope the predicted value of $v(s,y_{p1})$ can be larger that $v(s,y_{p1})$ if $AvgCos(x,y_{p1})>AvgCos(x,y_{p2})$. So the loss function of the prediction-guide network is as follows:
+
 $$
 L_{p g}=\sum_{\left(x, y_{p 1}, y_{p 2}\right)} e^{v\left(x, y_{p 2}\right)-v\left(x, y_{p 1}\right)}
 $$
+
 where $AvgCos(x,y_{p1})>AvgCos(x,y_{p2})$.
 
-
-
 At test time, we first compute the normalized log probability of each candidate, and then linearly combine it with the value predicted by the prediction-guide network. $x=\left\{x_{1}, x_{2}, \dots, x_{N}\right\}$ is the summary sequence. The final prediction probability is defined as:
+
 $$
 \alpha \times \log P(y | x)+(1-\alpha) \times \log v(x, y)
 $$
-
-
 
 
 ## 8.Hierarchical Structured Self-Attentive Model for Extractive Document Summarization (HSSAS)(2018 IEEE)
