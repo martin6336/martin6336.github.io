@@ -1,0 +1,21 @@
+title: qiwei'Log
+name: "qiwei's Tech Blog"
+author: Qiwei Bi
+twitter_username: qiweibi
+baseurl: "/lil-log"
+description: Document my learning notes.
+profile_url: "http://martin6336.github.io"
+
+# Build settings
+markdown: kramdown
+highlighter: rouge
+excerpt_separator: <!--more-->
+plugins:
+  - jekyll-feed
+exclude:
+  - Gemfile
+  - Gemfile.lock
+kramdown:
+  input: GFM
+  auto_ids: true
+  syntax_highlighter: rouge
