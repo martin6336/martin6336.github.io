@@ -6,7 +6,9 @@ date: 2019-07-04 15:32:10
 tags: meta-learning reinforcement-learning
 ---
 
+> Meta-RL is meta-learning on reinforcement learning tasks. After trained over a distribution of tasks, the agent is able to solve a new task by developing a new RL algorithm with its internal activity dynamics. This post starts with the origin of meta-RL and then dives into three key components of meta-RL.
 
+<!--more-->
 
 # summarization
 
@@ -26,7 +28,7 @@ tags: meta-learning reinforcement-learning
 基本模型依据[Bahdanau](https://arxiv.org/pdf/1409.0473v7.pdf "Neural machine translation by jointly learning to align and translate")提出的模型。
 
 - encoder consists of a bidirectional GRU-RNN
-- decoder consists of a uni-directional GRU-RNN($s_{i}=f(s_{i-1}, y_{i-1}, c_{i})$)
+- decoder consists of a uni-directional GRU-RNN($$s_{i}=f(s_{i-1}, y_{i-1}, c_{i})$$)
 - attention mechanism over the source-hidden states
 - a soft-max layer over target vocabulary to generate words
 - large vocabulary ‘trick’ -LVT(target vocab+source document vocab in a batch)
@@ -47,7 +49,7 @@ $$
 \begin{aligned} P_{i}^{a}(j) & \propto \exp \left(\mathbf{v}^{a} \cdot\left(\mathbf{W}_{h}^{a} \mathbf{h}_{i-1}+\mathbf{W}_{e}^{a} \mathbf{E}\left[o_{i-1}\right]\right.\right.\\ &+\mathbf{W}_{c}^{a} \mathbf{h}_{j}^{d}+\mathbf{b}^{a} ) ) \end{aligned}
 $$
 
-模型的目标函数为，$g_i$是switch的真实值，只在训练阶段才有：
+模型的目标函数为，$$g_i$$是switch的真实值，只在训练阶段才有：
 
 $$
 \begin{array}{l}{\log P(\mathbf{y} | \mathbf{x})=\sum_{i}\left(g_{i} \log \left\{P\left(y_{i} | \mathbf{y}_{-i}, \mathbf{x}\right) P\left(s_{i}\right)\right\}\right.} \\ {+\left(1-g_{i}\right) \log \left\{P\left(p(i) | \mathbf{y}_{-i}, \mathbf{x}\right)\left(1-P\left(s_{i}\right)\right)\right\} )}\end{array}
