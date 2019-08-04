@@ -60,7 +60,7 @@ $$
 ![en_de](/../assets/post_image/en_de.png)
 
 **4**.  Capturing Hierarchical Document Structure with Hierarchical Attention
-计算context vector $c_t$时使用hierarchical attention，对上文的attention进一步处理而已
+计算context vector $$c_t$$时使用hierarchical attention，对上文的attention进一步处理而已
 
 $$
 P^{a}(j)=\frac{P_{w}^{a}(j) P_{s}^{a}(s(j))}{\sum_{k=1}^{N_{d}} P_{w}^{a}(k) P_{s}^{a}(s(k))}
@@ -80,12 +80,12 @@ $$
 - a hierarchical decoding algorithm with a reference mechanism
 
 ### model structure
-The left denotes the traditional Bahdanauet's attention [$s_{i}=f(s_{i-1}, y_{i-1}, c_{i})$], while the right half denotes the graph-based attention.
+The left denotes the traditional Bahdanauet's attention [$$s_{i}=f(s_{i-1}, y_{i-1}, c_{i})$$], while the right half denotes the graph-based attention.
 ![graph-based attention](/../assets/post_image/graph-based attention.png)
 
 1. hierarchical encoder-decoder framework
 
-$\alpha_i^j$ indicates how much the $i$-th original sentence $s_i$ contributes to generating the $j$-th sentence in summary. $c_j$ is the context vector.
+$$\alpha_i^j$$ indicates how much the $i$-th original sentence $$s_i$$contributes to generating the $$j$$-th sentence in summary. $$c_j$$ is the context vector.
 
 $$
    \mathbf{c}_{j}=\sum_{i} \alpha_{i}^{j} \mathbf{h}_{i}
@@ -97,13 +97,13 @@ $$
 
 2. graph-based attention
 
-   Traditional attention methods not good at judging which sentences are more important to a document. *A sentence is important if it's heavily linked with many important sentences according to Pagerank algorithm.* $W(i,j) = h_i^TMh_j$ is the adjacent matrix. $\mathbf{y} \in \mathcal{R}^{n}$ with all elements equal to $\frac{1}{n}$. The importance score of each sentence is :
+   Traditional attention methods not good at judging which sentences are more important to a document. *A sentence is important if it's heavily linked with many important sentences according to Pagerank algorithm.* $$W(i,j) = h_i^TMh_j$$ is the adjacent matrix. $$\mathbf{y} \in \mathcal{R}^{n}$$ with all elements equal to $$\frac{1}{n}$$. The importance score of each sentence is :
 
 $$
    \mathbf{f}=(1-\lambda)\left(I-\lambda W D^{-1}\right)^{-1} \mathbf{y}
 $$
 
-Further, we want compute the rank scores of the original sentences regarding $h_j$. Applying the idea of topic-sensitive pagerank, which alters $\mathbf{y}$.
+Further, we want compute the rank scores of the original sentences regarding $$h_j$$. Applying the idea of topic-sensitive pagerank, which alters $$\mathbf{y}$$.
 
 $$
 \mathbf{y}_{T}=\left\{\begin{array}{ll}{\frac{1}{|T|}} & {i \in T} \\ {0} & {i \notin T}\end{array}\right.
@@ -127,7 +127,7 @@ $$
 
 	A beam search strategy may help to alleviate the repetition in a sentence, but the **repetition** in the whole generated summary is remained a problem. Sentence-level beam search is realized by maximizing the accumulated score of all the sentences generated.
 
-   We add an additional term to the score $\tilde{p}\left(y_{\tau}\right)$, ref is a function calculates the ratio of bigram overlap between two texts.
+   We add an additional term to the score $$\tilde{p}\left(y_{\tau}\right)$$, ref is a function calculates the ratio of bigram overlap between two texts.
 
 $$
 score(\tilde{y_{\tau}}) = \tilde{p}\left(y_{\tau}\right)+
@@ -150,9 +150,9 @@ $$
 
 ### model structure
 
-3 key element: $c_t^e, c_t^d, h_t^d$
+3 key element: $$c_t^e, c_t^d, h_t^d$$
 
-$c_t^e$ is the inpute context vectore, $c_t^d$ is the decoder context decoder, $h_t^d$ is the hidden state vector of decoder at time step $t$.
+$$c_t^e$$ is the inpute context vectore, $$c_t^d$$ is the decoder context decoder, $$h_t^d$$ is the hidden state vector of decoder at time step $$t$$.
 
 
 - 
@@ -174,7 +174,7 @@ $$
 \alpha_{t i}^{e}=\frac{e_{t i}^{\prime}}{\sum_{j=1}^{n} e_{t j}^{\prime}}
 $$
 
-obtain final context vector, a weighted sum of all hidden vector in encoder. It differs at different decoding step $t$.
+obtain final context vector, a weighted sum of all hidden vector in encoder. It differs at different decoding step $$t$$.
 
 $$
 c_{t}^{e}=\sum_{i=1}^{n} \alpha_{t i}^{e} h_{i}^{e}
@@ -182,7 +182,7 @@ $$
 
 
 - 
-similar as the way we obtain $c_t^e$. To further avoid repeating, we can incorporate more information about the previously decoded sequence into the decoder.
+similar as the way we obtain $$c_t^e$$. To further avoid repeating, we can incorporate more information about the previously decoded sequence into the decoder.
 
 $$
 e_{t t^{\prime}}^{d}=h_{t}^{d^{T}} W_{\mathrm{atn}}^{d} h_{t^{\prime}}^{d}
@@ -196,7 +196,7 @@ $$
 c_{t}^{d}=\sum_{j=1}^{t-1} \alpha_{t j}^{d} h_{j}^{d}
 $$
 
-- adopt switch function $u_t$ in generation process. 
+- adopt switch function $$u_t$$ in generation process. 
 
 $$
 p\left(u_{t}=1\right)=\sigma\left(W_{u}\left[h_{t}^{d}\left\|c_{t}^{e}\right\| c_{t}^{d}\right]+b_{u}\right)
@@ -215,7 +215,7 @@ p\left(y_{t}=x_{i} | u_{t}=1\right)=\alpha_{t i}^{e}
 $$
 
 ### objective
-combine two objective, $\hat{y}$ is the baseline output maximizing the output probability distribution at each time step, $y^s$ is obtained by sampling from the probability distribution at each time step $t$(the whole sentence?), $y^{*}$ is ground truth, $r(y)$ is the reward function, 
+combine two objective, $$\hat{y}$$ is the baseline output maximizing the output probability distribution at each time step, $$y^s$$ is obtained by sampling from the probability distribution at each time step $$t$$(the whole sentence?), $$y^{*}$$ is ground truth, $$r(y)$$ is the reward function, 
 
 $$
 L_{m l}=-\sum_{t=1}^{n^{\prime}} \log p\left(y_{t}^{*} | y_{1}^{*}, \ldots, y_{t-1}^{*}, x\right)
@@ -231,7 +231,7 @@ $$
 
 ### trick
 - ground-truth summaries almost never contain the same trigram twice
-- introduce some weight-sharing between this embedding matrix and the $W_{out}$ matrix of the token generation layer
+- introduce some weight-sharing between this embedding matrix and the $$W_{out}$$ matrix of the token generation layer
 
 ## 4. Improving Abstraction in Text Summarization(2018 EMNLP)
 ### problem
@@ -248,7 +248,7 @@ $$
 
 #### language model
 
-The input of language model is the same as decoder at each time step $t$. Combing $h^{lm}_t$ with  $[h_{t}^{d}|c_{t}^{e}| c_{t}^{d}]$, we have $h^{fuse}_t$
+The input of language model is the same as decoder at each time step $$t$$. Combing $$h^{lm}_t$$ with  $$[h_{t}^{d}|c_{t}^{e}| c_{t}^{d}]$$, we have $$h^{fuse}_t$$
 
 $$
 \begin{aligned} f_{t} &=\operatorname{sigmoid}\left(W^{\operatorname{lm}}\left[r_{t} ; h_{3, t}^{\operatorname{lm}}\right]+b^{\operatorname{lm}}\right) \\ g_{t} &=W^{\mathrm{fuse}}\left(\left[r_{t} ; g_{t} \odot h_{3, t}^{\operatorname{lm}}\right]\right)+b^{\mathrm{fuse}} \\ h_{t}^{\mathrm{fuse}} &=\operatorname{ReLU}\left(g_{t}\right) \end{aligned}
@@ -256,7 +256,7 @@ $$
 
 #### abstractive reward
 
-changing the the reward function  $r(y)$.
+changing the the reward function  $$r(y)$$.
 
 
 
@@ -300,7 +300,7 @@ We employ a greedy approach, where we add one sentence at a time incrementally t
 
 ### abstractive training
 
-We need to label sentences in the document for extractive training, which will bring loss. This paper propose a novel training technique to train SummaRuNNer abstractively. We **couple the initial model with a RNN decoder** that models the generation of abstractive summaries at training time only. We modify the first three equations of GRU based RNN, $s_{-1}$ is the summary representation computed at the last sentence of the sentence-level bidirectional RNN. It's the only bridge between the initial model and the coupled decoder.
+We need to label sentences in the document for extractive training, which will bring loss. This paper propose a novel training technique to train SummaRuNNer abstractively. We **couple the initial model with a RNN decoder** that models the generation of abstractive summaries at training time only. We modify the first three equations of GRU based RNN, $$s_{-1}$$ is the summary representation computed at the last sentence of the sentence-level bidirectional RNN. It's the only bridge between the initial model and the coupled decoder.
 
 
 $$
@@ -321,7 +321,7 @@ we minimize the negative log-likelihood of the words in the reference summary as
 $$
 l\left(\mathbf{W}, \mathbf{b}, \mathbf{W}^{\prime}, \mathbf{b}^{\prime}\right)=-\sum_{k=1}^{N_{s}} \log \left(\mathbf{P}_{\mathbf{v}}\left(w_{k}\right)\right)
 $$
-where $N_s$ is the number of words in the reference summary.
+where $$N_s$$ is the number of words in the reference summary.
 
 
 ## 6.Fast Abstractive Summarization with Reinforce-Selected Sentence Rewriting(2018 ACL)
@@ -346,7 +346,7 @@ where $N_s$ is the number of words in the reference summary.
 - a bidirectional LSTM
 - added LSTM(decoder)
 
-temporal convolutional model compute a coarse sentence representation $r_j$; the follow bi-LSTM learning a stronger representation $h_j$ by taking into account all previous and future sentences. 
+temporal convolutional model compute a coarse sentence representation $$r_j$$; the follow bi-LSTM learning a stronger representation $$h_j$$ by taking into account all previous and future sentences. 
 
 
 
@@ -365,10 +365,10 @@ $$
 P\left(j_{t} | j_{1}, \ldots, j_{t-1}\right)=\operatorname{softmax}\left(u^{t}\right)
 $$
 
-where $z_t$ is the ouput of the added lstm
+where $$z_t$$ is the ouput of the added lstm
 
 - get the extraction label for each sentence
-we find the most similar document sentences $d_{j_t}$ as below. Given the proxy training labels, the extraction is then trained to minimize the cross-entropy loss.
+we find the most similar document sentences $$d_{j_t}$$ as below. Given the proxy training labels, the extraction is then trained to minimize the cross-entropy loss.
 
 $$
 j_{t}=\operatorname{argmax}_{i}\left(\operatorname{ROUGE-L}_{r e c a l l}\left(d_{i}, s_{t}\right)\right)
@@ -382,13 +382,13 @@ Given the training paris(pairing each summary sentence with its extracted docume
 
 ![sum_fast_rl](/../assets/post_image/sum_fast_rl.png)
 
-At each time step $t$, the agent observe the current state $c_t=(D, d_{j_{t-1}})$, sample an action $j_t \sim P(j_{t} | j_{1}, \ldots, j_{t-1})$ to extract a sentence $d_{j_{t}}$ and receive a reward:
+At each time step $$t$$, the agent observe the current state $$c_t=(D, d_{j_{t-1}})$$, sample an action $$j_t \sim P(j_{t} | j_{1}, \ldots, j_{t-1})$$ to extract a sentence $$d_{j_{t}}$$ and receive a reward:
 
 $$
 r(t+1)=\operatorname{ROUGE-L}_{F_{1}}\left(g\left(d_{j_{t}}\right), s_{t}\right)
 $$
 
-Instead of using policy gradient algorithm, we apply a **advantage actor-critic(A2C) network**. We denote the parameters of extractor agent by $\theta=\left\{\theta_{a}, \omega\right\}$ for the decoder and hierarchical encoder respectively.
+Instead of using policy gradient algorithm, we apply a **advantage actor-critic(A2C) network**. We denote the parameters of extractor agent by $$\theta=\left\{\theta_{a}, \omega\right\}$$ for the decoder and hierarchical encoder respectively.
 
 $$
 A^{\pi_{\theta}}(c, j)=Q^{\pi_{\theta_{a}, \omega}}(c, j)-V^{\pi_{\theta_{a}, \omega}}(c)
@@ -402,7 +402,7 @@ The pointer net treats **EOE** as one of the extraction candidates and hence nat
 
 ### repetition-avoiding reranking
 
-We keep all $k$ sentence candidates generated by beam search, rerank all $k^n$ combinations of the $n$ generated summary sentences. The rank score is the **number of repeated N-grams**. This paper also apply a [diverse decoding algorithm](https://arxiv.org/pdf/1611.08562.pdf)  favoring choosing hypotheses from diverse parents.
+We keep all $$k$$ sentence candidates generated by beam search, rerank all $$k^n$$ combinations of the $$n$$ generated summary sentences. The rank score is the **number of repeated N-grams**. This paper also apply a [diverse decoding algorithm](https://arxiv.org/pdf/1611.08562.pdf)  favoring choosing hypotheses from diverse parents.
 
 ![sum_fast_diverse](/../assets/post_image/sum_fast_diverse.png)
 
@@ -426,14 +426,14 @@ $$
 \begin{aligned} e_{t i} &=v^{T} \tanh \left(W_{h} h_{i}+W_{s} s_{t}\right) \\ \alpha_{t}^{e} &=\operatorname{softmax}\left(e_{t}\right) \\ c_{t} &=\sum_{i=1}^{N} \alpha_{t i}^{e} h_{i} \end{aligned}
 $$
 
-$c_t$ is the context vector, which represents what has been read from the source text.
+$$c_t$$ is the context vector, which represents what has been read from the source text.
 
 $$
 P\left(y_{t} | y_{1}, \ldots, y_{t-1}\right)=\operatorname{softmax}\left(f\left(s_{t}, c_{t}\right)\right)
 $$
 
 #### use key information to improve model
-extract keywords from the text by using **TextRank** algorithm, feed the keywords one-by-one into the key information network(bi-lstm). We concatenate $\overline{h}_{1}$ and $\vec{h}_{1}$ as the key information representation.
+extract keywords from the text by using **TextRank** algorithm, feed the keywords one-by-one into the key information network(bi-lstm). We concatenate $$\overline{h}_{1}$ and $\vec{h}_{1}$$ as the key information representation.
 
 $$
 k=\left[\begin{array}{c}{\overline{h}_{1}} \\ {\vec{h}_{n}}\end{array}\right]
@@ -448,7 +448,7 @@ $$
 P_{v}\left(y_{t} | y_{1}, \ldots, y_{t-1}\right)=\operatorname{softmax}\left(f\left(s_{t}, c_{t}, k\right)\right)
 $$
 
-For the pointer net, a switch $p_{sw}$ is needed.
+For the pointer net, a switch $$p_{sw}$$ is needed.
 
 $$
 p_{s w}=\sigma\left(w_{k}^{T} k+w_{c}^{T} c_{t}+w_{s_{t}}^{T} s_{t}+b_{s w}\right)
@@ -467,7 +467,7 @@ $$
 
 #### prediction-guide mechanism at test time
 
-[prediction-guide mechanism](http://www.andrew.cmu.edu/user/hanqing1/data/vnn4nmt.pdf) is based on pairwise ranking loss. It's a single-layer feed forward network with sigmoid activation function. Compute the score of two partial summaries $y_{p1}$ and $y_{p2}$.
+[prediction-guide mechanism](http://www.andrew.cmu.edu/user/hanqing1/data/vnn4nmt.pdf) is based on pairwise ranking loss. It's a single-layer feed forward network with sigmoid activation function. Compute the score of two partial summaries $$y_{p1}$$ and $$y_{p2}$$.
 $$
 \operatorname{Avg} \operatorname{Cos}\left(x, y_{p}\right)=\frac{1}{M} \sum_{\overline{s} \in S\left(y_{p}\right)} \cos (\overline{s}, k)
 $$
@@ -476,15 +476,15 @@ $$
 \overline{s}_{t}=\frac{1}{t} \sum_{l=1}^{t} s_{l}
 $$
 
-we hope the predicted value of $v(s,y_{p1})$ can be larger that $v(s,y_{p1})$ if $AvgCos(x,y_{p1})>AvgCos(x,y_{p2})$. So the loss function of the prediction-guide network is as follows:
+we hope the predicted value of $$v(s,y_{p1})$$ can be larger that $$v(s,y_{p1})$$ if $$AvgCos(x,y_{p1})>AvgCos(x,y_{p2})$$. So the loss function of the prediction-guide network is as follows:
 
 $$
 L_{p g}=\sum_{\left(x, y_{p 1}, y_{p 2}\right)} e^{v\left(x, y_{p 2}\right)-v\left(x, y_{p 1}\right)}
 $$
 
-where $AvgCos(x,y_{p1})>AvgCos(x,y_{p2})$.
+where $$AvgCos(x,y_{p1})>AvgCos(x,y_{p2})$$.
 
-At test time, we first compute the normalized log probability of each candidate, and then linearly combine it with the value predicted by the prediction-guide network. $x=\left\{x_{1}, x_{2}, \dots, x_{N}\right\}$ is the summary sequence. The final prediction probability is defined as:
+At test time, we first compute the normalized log probability of each candidate, and then linearly combine it with the value predicted by the prediction-guide network. $$x=\left\{x_{1}, x_{2}, \dots, x_{N}\right\}$$ is the summary sequence. The final prediction probability is defined as:
 
 $$
 \alpha \times \log P(y | x)+(1-\alpha) \times \log v(x, y)
@@ -509,7 +509,7 @@ $$
 
 ![hssas](/../assets/post_image/hssas.png)
 
-$H_{s} \in \mathbb{R}^{n \times 2 u}$ denotes the whole LSTM hidden states for a sentence, attention is calculated as below, then the sentence representation is $s_{i}=a_{s}H_{s}$
+$$H_{s} \in \mathbb{R}^{n \times 2 u}$$ denotes the whole LSTM hidden states for a sentence, attention is calculated as below, then the sentence representation is $$s_{i}=a_{s}H_{s}$$
 
 $$
 a_{s}=\operatorname{softmax}\left(w_{s_{2}} \tanh \left(w_{s_{1}} H_{s}^{T}\right)\right)
@@ -517,7 +517,7 @@ $$
 
 The operation is similar at sentence level.
 
-Similar with SummaRunner, this model introduce sentence content richness $C_j$, salience with respect to the document $M_j$, the novelty of the sentence with respect to the accumulated summary $N_j$ and the positional feature $P_j$. $o_j$ is the summary representation at sentence $j$
+Similar with SummaRunner, this model introduce sentence content richness $$C_j$$, salience with respect to the document $$M_j$$, the novelty of the sentence with respect to the accumulated summary $$N_j$$ and the positional feature $$P_j$$. $$o_j$$ is the summary representation at sentence $$j$$
 
 $$
 C_{j}=W_{c} s_{j}
@@ -539,7 +539,7 @@ $$
 P_{j}=W_{p} p_{j}
 $$
 
-The probability distribution for the sentence label $y_j$ is :
+The probability distribution for the sentence label $$y_j$$ is :
 
 $$
 P\left(y_{j}=1 | s_{j}, o_{j}, d\right)=\sigma\left(C_{j}+M_{j}-N_{j}+P_{j}+b\right)
@@ -570,13 +570,13 @@ $$
 
 ![swap_2](/../assets/post_image/swap_2.png)
 
-The word embedding $x_i$ is encoded as $e_i$. The vector output of bi-lstm at the end of a sentence is used to represent the entire sentence. The hidden vector of word-level and sentence-level decoder are defined as:
+The word embedding $$x_i$$ is encoded as $$e_i$$. The vector output of bi-lstm at the end of a sentence is used to represent the entire sentence. The hidden vector of word-level and sentence-level decoder are defined as:
 
 $$
 \begin{array}{l}{h_{j}=L S T M\left(h_{j-1}, a_{j-1}, \phi\left(A_{j-1}\right)\right)} \\ {H_{j}=L S T M\left(H_{j-1}, A_{j-1}, \phi\left(a_{j-1}\right)\right)}\end{array}
 $$
 
-where $a_j=\sum_{i=0}^{n} \alpha_{ij}^{w} e_{i}$, $A_j=\sum_{k=0}^{N} \alpha_{kj}^{s} E_{k}$.
+where $$a_j=\sum_{i=0}^{n} \alpha_{ij}^{w} e_{i}$$, $$A_j=\sum_{k=0}^{N} \alpha_{kj}^{s} E_{k}$$.
 The probability to select sentence or words is defined below:
 
 $$
@@ -595,13 +595,13 @@ $$
 \alpha_{i j}^{w}=\operatorname{softmax}\left(v_{t}^{T} \phi\left(w_{h} h_{j}+w_{t} e_{i}\right)\right)
 $$
 
-The switch probability at $j^{th}$ decoding step is given by:
+The switch probability at $$j^{th}$$ decoding step is given by:
 
 $$
 \begin{array}{l}{p\left(Q_{j}=1 | v_{<j}, D\right)=} {\sigma\left(w_{Q}^{T}\left(H_{j-1}, A_{j-1}, \phi\left(h_{j-1}, a_{j-1}\right)\right)\right)} \\ {p\left(Q_{j}=0 | v_{<j}, D\right)=1-p\left(Q_{j}=1 | v_{<j}, D\right)}\end{array}
 $$
 
-The final action $v_j$ is defined as:
+The final action $$v_j$$ is defined as:
 
 $$
 \begin{aligned} p_{k j}^{s} &=\alpha_{k j}^{s} p\left(Q_{j}=1 | v_{<j}, D\right) \\ p_{i j}^{w} &=\alpha_{i j}^{w} p\left(Q_{j}=0 | v_{<j}, D\right) \end{aligned}
@@ -613,7 +613,7 @@ $$
 
 
 
-The loss function $l_j$ at $j^{th}$ step is set to $l_{j}=-\log \left(p_{k j}^{s} q_{j}^{s}+p_{i j}^{w} q_{j}^{w}\right)-\log p\left(Q_{j} | v_{<j}, D\right)$, $q^s_j$ and $q_j^w$ is mutual exclusive. There is no ground-truth label.
+The loss function $$l_j$$ at $$j^{th}$$ step is set to $$l_{j}=-\log \left(p_{k j}^{s} q_{j}^{s}+p_{i j}^{w} q_{j}^{w}\right)-\log p\left(Q_{j} | v_{<j}, D\right)$$, $$q^s_j$$ and $$q_j^w$$ is mutual exclusive. There is no ground-truth label.
 
 The final summary consists of three sentences with the highest importance scores.
 
