@@ -248,7 +248,7 @@ $$
 
 #### language model
 
-The input of language model is the same as decoder at each time step $$t$$. Combing $$h^{lm}_t$$ with  $$[h_{t}^{d}|c_{t}^{e}| c_{t}^{d}]$$, we have $$h^{fuse}_t$$
+The input of language model is the same as decoder at each time step $$t$$ . Combing $$h^{lm}_t$$ with  $$[h_{t}^{d} | c_{t}^{e}| c_{t}^{d}]$$ , we have $$h^{fuse}_t$$
 
 $$
 \begin{aligned} f_{t} &=\operatorname{sigmoid}\left(W^{\operatorname{lm}}\left[r_{t} ; h_{3, t}^{\operatorname{lm}}\right]+b^{\operatorname{lm}}\right) \\ g_{t} &=W^{\mathrm{fuse}}\left(\left[r_{t} ; g_{t} \odot h_{3, t}^{\operatorname{lm}}\right]\right)+b^{\mathrm{fuse}} \\ h_{t}^{\mathrm{fuse}} &=\operatorname{ReLU}\left(g_{t}\right) \end{aligned}
