@@ -24,4 +24,25 @@ tags: machine comprehension
 
 ## difficulty
 - design a iterative process while the task is rather simple: output the option with highest score
-- 
+
+
+# Coherent Comments Generation for Chinese Articles with a Graph-to-Sequence Model
+
+## career
+- comment generation
+
+## problems
+- traditional LSTM is not good at generating a short review form a long document
+- comment is more diverse compared with mt
+
+## improvement
+- propose a topic interaction graph to represent the article
+- graph to sequence  generation
+
+## difficulty
+- data collection
+- graph construction from raw text
+
+
+
+
