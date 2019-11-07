@@ -1,4 +1,8 @@
-
+layout: post
+comments: true
+title: inferential machine comprehension
+date: 2019-11-07 15:32:10
+tags: machine comprehension
 
 # Inferential Machine Comprehension: Answering Questions by Recursively Deducing the Evidence Chain from Text
 
