@@ -25,6 +25,7 @@ tags: machine comprehension
 ## difficulty
 - design a iterative process while the task is rather simple: output the option with highest score
 
+------
 
 # Coherent Comments Generation for Chinese Articles with a Graph-to-Sequence Model
 
@@ -42,6 +43,24 @@ tags: machine comprehension
 ## difficulty
 - data collection
 - graph construction from raw text
+
+----
+
+# Adversarial Attention Modeling for Multi-dimensional Emotion Regression
+
+## career
+- emotion regression
+- Adversarial Multi-task Learning 
+
+## problem
+-  multiple independent models for different emotion dimensions
+-  relationship between two emotion dimensions can be leveraged
+
+## improvement
+- a multi-task learning task (shared information and task-specifical information)
+- adversarial learning ensures that shared feature space simply contains task-invariant information
+
+
 
 
 
