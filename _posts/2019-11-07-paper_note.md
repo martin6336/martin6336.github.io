@@ -60,7 +60,36 @@ tags: machine comprehension
 - a multi-task learning task (shared information and task-specifical information)
 - adversarial learning ensures that shared feature space simply contains task-invariant information
 
+----
 
+# Adversarial Multi-task Learning for Text Classification
+
+## career
+- multi-task learning
+
+## problems
+- divide the features of different tasks into private and shared spaces
+- the shared feature space could contain some unnecessary taskspecific features, while some sharable features could also be mixed in private space, suffering from feature redundancy
+
+## improvement
+- adversarial multi-task
+- orthogonality constraints
+
+---
+
+## Divide, Conquer and Combine: Hierarchical Feature Fusion Network with Local and Global Perspectives for Multimodal Affective Computing
+
+## career
+- Multimodal machine learning
+
+## problems
+- treats the feature vectors of the modalities as the smallest units and fuse them at holistic level
+- variations across different portions of a feature vector which may contain disparate aspects of information,  thus fail to render the fusion procedure more specialized
+
+## improvement
+- leverage a sliding window to explore inter-modality dynamics locally
+- global fusion to obtain an overall view of multimodal embeddings via a specifically designed ABS-LSTM
+- integrate Regional Interdependence Attention and Global Interaction Attention
 
 
 
