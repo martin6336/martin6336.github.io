@@ -91,6 +91,30 @@ tags: machine comprehension
 - global fusion to obtain an overall view of multimodal embeddings via a specifically designed ABS-LSTM
 - integrate Regional Interdependence Attention and Global Interaction Attention
 
+----
+# OpenDialKG: Explainable Conversational Reasoning with Attention-based Walks over Knowledge Graphs
+
+## career
+- dialog system
+- specifically, retrieve entities to mention in the next turn
+
+## improvement
+- multi-modal feature representation
+- zero-shot learning
+- adversarial training
+- domain adaption
+
+---
+# Domain-Adversarial Training of Neural Networks
+
+## career
+- domain adaptation
+
+## improvement
+- domain classifier
+- gradient reversal layer
+- discriminative for the main learning task on the source domain and indiscriminate with respect to the shift between the domains
 
 
+![domain_adaption](/../assets/post_image/domain_adaption.jpg)
 
