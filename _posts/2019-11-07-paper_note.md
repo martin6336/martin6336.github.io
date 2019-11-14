@@ -1,7 +1,7 @@
 ---
 layout: post
 comments: true
-title: inferential machine comprehension
+title: paper note
 date: 2019-11-07 15:32:10
 tags: machine comprehension
 ---
