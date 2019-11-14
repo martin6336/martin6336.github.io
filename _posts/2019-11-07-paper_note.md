@@ -6,7 +6,7 @@ date: 2019-11-07 15:32:10
 tags: machine comprehension
 ---
 
-> Meta-RL is meta-learning on reinforcement learning tasks. After trained over a distribution of tasks, the agent is able to solve a new task by developing a new RL algorithm with its internal activity dynamics. This post starts with the origin of meta-RL and then dives into three key components of meta-RL.
+> paper's main idea,  domain of the problem, and their innovate methods 
 
 <!--more-->
 
@@ -57,7 +57,7 @@ tags: machine comprehension
 -  relationship between two emotion dimensions can be leveraged
 
 ## improvement
-- a multi-task learning task (shared information and task-specifical information)
+- a multi-task learning task (shared information and task-specific information)
 - adversarial learning ensures that shared feature space simply contains task-invariant information
 
 ----
@@ -69,7 +69,7 @@ tags: machine comprehension
 
 ## problems
 - divide the features of different tasks into private and shared spaces
-- the shared feature space could contain some unnecessary taskspecific features, while some sharable features could also be mixed in private space, suffering from feature redundancy
+- the shared feature space could contain some unnecessary task specific features, while some sharable features could also be mixed in private space, suffering from feature redundancy
 
 ## improvement
 - adversarial multi-task
@@ -77,10 +77,10 @@ tags: machine comprehension
 
 ---
 
-## Divide, Conquer and Combine: Hierarchical Feature Fusion Network with Local and Global Perspectives for Multimodal Affective Computing
+# Divide, Conquer and Combine: Hierarchical Feature Fusion Network with Local and Global Perspectives for Multimodal Affective Computing
 
 ## career
-- Multimodal machine learning
+- Multi-modal machine learning
 
 ## problems
 - treats the feature vectors of the modalities as the smallest units and fuse them at holistic level
@@ -88,7 +88,7 @@ tags: machine comprehension
 
 ## improvement
 - leverage a sliding window to explore inter-modality dynamics locally
-- global fusion to obtain an overall view of multimodal embeddings via a specifically designed ABS-LSTM
+- global fusion to obtain an overall view of multi-modal embeddings via a specifically designed ABS-LSTM
 - integrate Regional Interdependence Attention and Global Interaction Attention
 
 ----
@@ -100,9 +100,8 @@ tags: machine comprehension
 
 ## improvement
 - multi-modal feature representation
-- zero-shot learning
+- zero-shot learning(domain adaption)
 - adversarial training
-- domain adaption
 
 ---
 # Domain-Adversarial Training of Neural Networks
@@ -117,4 +116,87 @@ tags: machine comprehension
 
 
 ![domain_adaption](/../assets/post_image/domain_adaption.jpg)
+
+----
+
+
+
+# Joint Slot Filling and Intent Detection via Capsule Neural Networks 
+
+## career
+- NLU
+- slot filling
+- intent detection
+- multi-task
+
+## problems
+- existing works treat slot filling and intent detection separately in a pipeline manner or adopt joint models which sequentially label slots while summarizing the utterancelevel intent
+- the hierarchical relationship among words, slots, and intents has not been sufficiently used
+
+## improvement
+- the properties of **Capsule Neural Networks** are appealing for dealing with the hierarchical structure: word, slot, intent
+
+---
+
+# Semi-supervised Domain Adaptation for Dependency Parsing(水)
+
+## career
+- Dependency Parsing
+- domain adaptation
+- semi-supervised
+
+## problems
+- cross-domain parsing assuming there is no target-domain training data in an unsupervised manner
+- the annotation cost is high
+
+## improvement
+- semi-supervised domain-adaption can be tackled with only dozens or hundreds of labled target-domain traning sentences
+
+---
+
+# DEEP BIAFFINE ATTENTION FOR NEURAL DEPENDENCY PARSING
+
+## career
+- dependency parsing
+
+## problems
+- whether there exists an arc between two words
+- what is the label of the arc
+
+## improvement
+- DEEP BIAFFINE ATTENTION
+- variable-class bi-affine classifier for arc 
+![bi-affine](/../assets/post_image/bi_affine.jpg)
+- fixed-class bi-affine classifier for label
+
+---
+
+# This Email Could Save Your Life: Introducing the Task of Email Subject Line Generation
+
+## career
+- summarization
+
+## improvement
+- multi-stage training strategy
+- Supervised Pretraining
+- RL Training for Extractor(not novel)
+![email](/../assets/post_image/email.jpg)
+- new dataset
+
+----
+
+# Incremental Learning from Scratch for Task-Oriented Dialogue Systems
+
+## career
+- dialogue system
+
+## problems
+- unexpected queries may be given to the system after the system is deployed. 
+
+## improvement
+- new dataset
+- Incremental Dialogue System consists of three main components: dialogue embedding module, uncertainty estimation module and online learning module.
+![incre_dialog](/../assets/post_image/incre_dialog.jpg)
+- variation as confidnece(**probabilistic graphical models**)
+- Monte Carlo approximation
 
