@@ -16,7 +16,7 @@ tags: machine comprehension
 - inferential machine comprehension
 
 ## problems
-- exsisting methods may be good at context matching, but have limited capability to reason across multiple sentences to deduce the right answer.
+- existing methods may be good at context matching, but have limited capability to reason across multiple sentences to deduce the right answer.
 
 ## improvement
 - mimic human process for deducing the evidence chain
@@ -69,11 +69,13 @@ tags: machine comprehension
 
 ## problems
 - divide the features of different tasks into private and shared spaces
+![domain_adaption](/../assets/post_image/ad_text.jpg)
 - the shared feature space could contain some unnecessary task specific features, while some sharable features could also be mixed in private space, suffering from feature redundancy
 
 ## improvement
 - adversarial multi-task
 - orthogonality constraints
+![domain_adaption](/../assets/post_image/ad_text1.jpg)
 
 ---
 
@@ -199,4 +201,67 @@ tags: machine comprehension
 ![incre_dialog](/../assets/post_image/incre_dialog.jpg)
 - variation as confidnece(**probabilistic graphical models**)
 - Monte Carlo approximation
+
+
+# Multi-Modal Sarcasm Detection in Twitter with Hierarchical Fusion Model
+
+## career
+- multi-modal learning
+
+## improvement
+- text, attribute, image embedding matrix
+- use text, attribute, image **guidance vectors** to get three **modality feature** vectors
+- two layer feed-forward neural network to calculate modalities' weight
+![sarcasm](/../assets/post_image/multi-modal-sarcasm.jpg)
+
+# Using Human Attention to Extract Keyphrase from Microblog Post
+
+## career
+- Keyphrase extraction
+
+## improvement
+- estimates human attention from GECO corpus
+- use the TRT feature, which represents total human attention on words during reading
+
+# Topic-Aware Neural Keyphrase Generation for Social Media Language
+
+## career
+- keyphrase extraction
+
+## base
+- Discovering Discrete Latent Topics with Neural Variational Inference
+
+
+## improvement
+- neural topic model
+![topic_keyphrase.jpg](/../assets/post_image/topic_keyphrase.jpg)
+
+# Topic Memory Networks for Short Text Classification
+
+## improvement
+- neural topic model
+- memory network
+![topic_memory](/../assets/post_image/topic_memory.jpg)
+
+
+# Generating Summaries with Topic Templates and Structured Convolutional Decoders
+
+## career
+- summarization
+
+## improvement
+- topic guidance (auxiliary task)
+
+
+# Self-Supervised Learning for Contextualized Extractive Summarization
+
+## career
+- summarization
+
+## improvement
+- self-supervised
+- mask, replace, switch
+
+
+
 
