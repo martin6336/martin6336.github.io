@@ -262,6 +262,13 @@ tags: machine comprehension
 - self-supervised
 - mask, replace, switch
 
+# Token-level Dynamic Self-Attention Network for Multi-Passage Reading Comprehension
 
+## carrer
+- reading comprehension
 
+## improvement
+- use estimated importance to extract the most important K tokens. 
+- lower memory consumption and makes the self-attention focus on the active part of a long input sequence
 
+![topic_memory](/../assets/post_image/dynamic_san.jpg)
