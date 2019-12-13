@@ -264,11 +264,21 @@ tags: machine comprehension
 
 # Token-level Dynamic Self-Attention Network for Multi-Passage Reading Comprehension
 
-## carrer
+## career
 - reading comprehension
 
 ## improvement
+- structure innovation
 - use estimated importance to extract the most important K tokens. 
 - lower memory consumption and makes the self-attention focus on the active part of a long input sequence
+- ![topic_memory](/../assets/post_image/dynamic_san.jpg)
 
-![topic_memory](/../assets/post_image/dynamic_san.jpg)
+# PaperRobot: Incremental Draft Generation of Scientific Ideas
+
+## career
+- paper abstract, conclusion, and future work generation
+
+## improvement
+- memory, graph entity
+- combine decoder, memory, language model to predict
+- ![topic_memory](/../assets/post_image/paperRobot.jpg)
